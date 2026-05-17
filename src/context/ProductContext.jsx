@@ -5,7 +5,7 @@ import { useAuth } from "./AuthContext";
 const ProductContext = createContext();
 
 // बैकएंड एक्सप्रेस सर्वर का यूआरएल एंडपॉइंट
-const API_URL = "http://localhost:5000/api";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 export function ProductProvider({ children }) {
   const { user } = useAuth(); // लॉगिन यूजर की स्थिति ट्रैक करने के लिए
