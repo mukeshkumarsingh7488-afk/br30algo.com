@@ -14,13 +14,11 @@ export default function ManageDeliveryBoy() {
     try {
       setLoading(true);
       const token = localStorage.getItem("sudha_token");
-      const response = await axios.get(`${API_URL}/users/list`, {
+      const response = await axios.get(`${API_URL}/users/list?role=delivery_boy`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (response.data && response.data.success) {
-        // केवल डिलीवरी बॉयज़ को फ़िल्टर करना
-        const onlyBoys = response.data.data.filter((u) => u.role === "delivery_boy");
-        setAgents(onlyBoys);
+        setAgents(response.data.data || []);
       }
     } catch (error) {
       console.error("❌ Fetch Agents API Error:", error.message);

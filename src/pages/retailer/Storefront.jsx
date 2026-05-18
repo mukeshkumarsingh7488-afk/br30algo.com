@@ -13,22 +13,14 @@ export default function Storefront() {
   const [activeTab, setActiveTab] = useState("store");
   const [activeCategory, setActiveCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
-
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-
   const [profilePic, setProfilePic] = useState(localStorage.getItem("sudha_profile_pic") || user?.userProfilePic || null);
-
   const [proprietorName, setProprietorName] = useState(user?.proprietor || "");
-
   const [isEditingName, setIsEditingName] = useState(false);
-
   const [walletBalance, setWalletBalance] = useState(user?.walletBalance || 0);
-
   const [photoLoading, setPhotoLoading] = useState(false);
-
   const [cart, setCart] = useState(() => {
     const savedCart = localStorage.getItem(`sudha_cart_${user?.id || user?._id}`);
-
     return savedCart ? JSON.parse(savedCart) : {};
   });
 
@@ -280,7 +272,7 @@ export default function Storefront() {
   });
 
   const categoriesMenu = ["All", "Milk", "Dahi", "Paneer", "Ghee", "Drink & Beverages", "Icecream", "Sweet"];
-  // ⚡ मास्टर हाइब्रिड पेमेंट गेटवे और आर्डर डिस्पैच इंजन (UPI vs Wallet MongoDB Live Sync)
+
   const handlePlaceOrderSubmit = async () => {
     const cartItems = Object.keys(cart).map((pId) => {
       const prod = products.find((p) => p._id === pId);
@@ -390,22 +382,18 @@ export default function Storefront() {
   };
 
   return (
-    /* 🚀 100% फिक्स आउटर फ्रेम: मोबाइल स्क्रीन को हिलाने से रोकेगा */
     <div className="w-full h-screen bg-gray-50 flex flex-col justify-between select-none relative max-w-md mx-auto shadow-2xl border-x border-gray-200 overflow-hidden text-xs">
       <style>{`
         .store-floating-img { transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.22s ease !important; position: relative; z-index: 10; }
         .store-floating-img:hover { transform: scale(2.6) !important; z-index: 9999 !important; box-shadow: 0 10px 25px rgba(0,0,0,0.2) !important; border-radius: 8px !important; background-color: white !important; }
       `}</style>
 
-      {/* 🔒 [STABLE HEADER SECTION] : यह डिब्बा स्क्रीन के टॉप पर लोहे की तरह जमेगा */}
       <div className="w-full flex flex-col bg-white sticky top-0 z-30 shadow-sm flex-shrink-0">
-        {/* 1. ब्लू स्टोर नाम हेडर */}
         <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-4 py-3 shadow-md flex items-center justify-between">
           <div className="w-8 h-8 border border-white/40 rounded-full overflow-hidden bg-white/20 flex items-center justify-center flex-shrink-0 shadow-inner">{profilePic ? <img src={profilePic} alt="" className="w-full h-full object-cover" /> : <User className="w-4 h-4 text-white/80" />}</div>
           <div className="flex-1 text-center px-1">
             <h1 className="text-xs font-black uppercase tracking-wide truncate max-w-[190px] mx-auto flex items-center justify-center gap-1">
               <span>{user?.shopName || "MUKESH JENREL STORE"}</span>
-              {/* ⚡ ब्लू वेरिफिकेशन बैज यहाँ मुख्य स्टोर फ्रंट पर भी लॉक है */}
               <BadgeCheck className="w-3.5 h-3.5 text-blue-400 fill-white flex-shrink-0" />
             </h1>
             <span className="text-[9px] font-bold opacity-75 block mt-0.5">📍 Route: {user?.route || "Sonbarsa Route"}</span>
@@ -414,8 +402,6 @@ export default function Storefront() {
             <Menu className="w-5 h-5" />
           </button>
         </div>
-
-        {/* 2. रीयल-टाइम सर्च बार और कैटेगरी पट्टी */}
         {activeTab === "store" && (
           <div className="p-3 bg-white space-y-2.5 border-b border-gray-100 flex-shrink-0">
             <div className="relative">
@@ -434,9 +420,7 @@ export default function Storefront() {
           </div>
         )}
       </div>
-      {/* 🌊 [INDEPENDENT SCROLL WORKSPACE]: केवल अंदर का माल ही स्क्रॉल होगा */}
       <div className="flex-1 overflow-y-auto p-3 pb-28 scrollbar-none bg-gray-50/50">
-        {/* टैब 1: शॉपिंग स्टोर */}
         {activeTab === "store" && (
           <div className="space-y-2.5 animate-fade-in">
             {baseFilteredProducts.map((p) => {
@@ -477,7 +461,6 @@ export default function Storefront() {
           </div>
         )}
 
-        {/* टैब 2: इन-स्टॉक माल पेज */}
         {activeTab === "instock" && (
           <div className="space-y-2.5">
             <div className="bg-emerald-50 border border-emerald-100 p-2.5 rounded-xl flex items-center space-x-2 mb-1">
@@ -525,7 +508,6 @@ export default function Storefront() {
           </div>
         )}
 
-        {/* टैब 3: स्वतंत्र MY CART */}
         {activeTab === "cart" && (
           <div className="space-y-3 animate-fade-in">
             <div className="bg-blue-50 border border-blue-100 p-2.5 rounded-xl flex items-center space-x-2">
@@ -600,7 +582,6 @@ export default function Storefront() {
           </div>
         )}
 
-        {/* टैब 4: ऑर्डर्स */}
         {activeTab === "orders" && (
           <div className="text-center py-10 text-gray-400 font-bold bg-white border border-dashed rounded-2xl">
             <CheckCircle2 className="w-8 h-8 text-blue-500 mx-auto mb-2" />
@@ -609,7 +590,6 @@ export default function Storefront() {
         )}
       </div>
 
-      {/* 4-BTN MASTER BOTTOM NAVIGATION STRIP */}
       <div className="fixed bottom-0 inset-x-0 bg-white border-t border-gray-200 shadow-2xl max-w-md mx-auto grid grid-cols-4 py-1.5 px-1 z-40 flex-shrink-0">
         <button onClick={() => setActiveTab("store")} className={`flex flex-col items-center justify-center py-1 rounded-xl transition ${activeTab === "store" ? "text-blue-600 bg-blue-50 font-black" : "text-gray-400 hover:text-gray-700 font-bold"}`}>
           <ShoppingBag className="w-4 h-4" />
@@ -630,7 +610,6 @@ export default function Storefront() {
         </button>
       </div>
 
-      {/* FLOATING FOOTER CART SUMMARY BAR */}
       {activeTab === "store" && Object.keys(cart).length > 0 && (
         <div className="fixed bottom-[54px] inset-x-0 bg-blue-600 text-white px-4 py-2 flex items-center justify-between shadow-2xl z-40 max-w-md mx-auto border-t border-blue-500">
           <div className="flex items-center space-x-2.5">
@@ -653,17 +632,13 @@ export default function Storefront() {
         </div>
       )}
 
-      {/* 🟢 🆕 [100% UPGRADED VIP SLIDE DRAWER COMPONENT] : ५-धमाका फीचर्स वाला शानदार क्रेडेंशियल पैनल */}
       {isDrawerOpen && (
         <div className="fixed inset-0 bg-black/50 z-50 flex max-w-md mx-auto animate-fade-in">
           <div className="absolute inset-0 z-0" onClick={() => setIsDrawerOpen(false)}></div>
           <div className="w-72 bg-white h-full p-4 flex flex-col justify-between shadow-2xl relative ml-auto z-10">
-            {/* स्क्रॉलिंग कंटेनर */}
             <div className="overflow-y-auto scrollbar-none flex-1 pb-4 space-y-4">
-              {/* हेडर बॉक्स: लाइव फोटो + ब्लू वेरीफाई बैज */}
               <div className="flex justify-between items-start border-b pb-3.5">
                 <div className="flex items-center space-x-2.5">
-                  {/* 📸 १. असली गोल प्रोफाइल फोटो + कैमरा अपलोडर */}
                   <div className="relative w-11 h-11 border-2 border-blue-600 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center group shadow-md flex-shrink-0">
                     {profilePic ? <img src={profilePic} alt="" className="w-full h-full object-cover" /> : <User className="w-5 h-5 text-gray-400" />}
                     <label className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 cursor-pointer transition">
@@ -674,7 +649,6 @@ export default function Storefront() {
                   <div className="truncate">
                     <h3 className="text-xs font-black text-gray-800 flex items-center gap-1 truncate max-w-[150px]">
                       <span>{user?.shopName || "Sudha Retailer"}</span>
-                      {/* 🔵 २. वीआईपी ब्लू वेरीफाई बैज */}
                       <BadgeCheck className="w-3.5 h-3.5 text-blue-500 fill-white flex-shrink-0" />
                     </h3>
                     <span className="text-[9px] font-bold text-gray-400 bg-gray-50 px-1 py-0.5 border rounded mt-0.5 block truncate max-w-[150px]">{user?.email}</span>
@@ -685,7 +659,6 @@ export default function Storefront() {
                 </button>
               </div>
 
-              {/* वॉलेट कार्ड */}
               <div className="bg-gradient-to-br from-indigo-600 to-blue-700 text-white p-3.5 rounded-2xl shadow-lg space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-[9px] font-black text-indigo-100 uppercase tracking-wider flex items-center gap-1">
@@ -702,7 +675,6 @@ export default function Storefront() {
                 </div>
               </div>
 
-              {/* 🆔 ३. लाइव नेम एडिटिंग पेंसिल टूल */}
               <div className="bg-gray-50 border p-3 rounded-2xl space-y-2.5 shadow-sm">
                 <span className="text-[9px] font-black text-gray-400 uppercase tracking-wider block border-b pb-1">Identity Manager</span>
                 <div>
@@ -725,7 +697,6 @@ export default function Storefront() {
                 </div>
               </div>
 
-              {/* 📅 ४. स्टोर पैरामीटर्स + लाइव रजिस्ट्रेशन जॉइनिंग डेट */}
               <div className="bg-gray-50 border p-3 rounded-2xl space-y-2 shadow-sm font-semibold text-gray-700">
                 <span className="text-[9px] font-black text-gray-400 uppercase tracking-wider block border-b pb-1">Distribution Registry Parameters</span>
                 <p className="m-0 flex justify-between text-[11px]">
@@ -734,7 +705,6 @@ export default function Storefront() {
                 <p className="m-0 flex justify-between text-[11px]">
                   <span>🆔 Sudha Dealer Code:</span> <span className="font-mono font-black text-blue-600">#{user?.dealerCode || "122534"}</span>
                 </p>
-                {/* 📅 लाइव जॉइनिंग डेट रेंडरिंग इंजन */}
                 <p className="m-0 flex justify-between text-[11px] border-t border-dashed pt-1.5 mt-1 text-emerald-700 font-bold">
                   <span className="flex items-center gap-0.5">
                     <Calendar className="w-3.5 h-3.5 text-emerald-500" /> Joined Depot:
@@ -752,7 +722,6 @@ export default function Storefront() {
               </div>
             </div>
 
-            {/* लॉगआउट बटन */}
             <button onClick={logout} className="w-full bg-red-50 hover:bg-red-100 border border-red-200 text-red-600 font-black py-2 rounded-xl transition flex items-center justify-center space-x-1.5 text-xs">
               <LogOut className="w-4 h-4" />
               <span>LOGOUT ACCOUNT</span>
