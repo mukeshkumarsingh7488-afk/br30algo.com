@@ -7,14 +7,12 @@ import "jspdf-autotable";
 const API_URL = import.meta.env.VITE_API_URL || "https://onrender.com";
 
 export default function DeliveryDashboard() {
-  // UI States
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState("pending"); // pending | completed | collected
+  const [activeTab, setActiveTab] = useState("pending");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split("T")[0]);
   const [photoLoading, setPhotoLoading] = useState(false);
 
-  // Data States
   const [agentDetails, setAgentDetails] = useState({
     proprietor: "Mukesh Kumar",
     mobile: "9999999999",
@@ -27,9 +25,7 @@ export default function DeliveryDashboard() {
   const [payments, setPayments] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // Mock Data for Offline Resilience & Layout Display
   useEffect(() => {
-    // यहाँ आपके एडमिन द्वारा दिए गए लाइव मोंगोडीबी ऑर्डर्स लोड होंगे
     setOrders([
       { id: "ORD001", shopName: "Verma Dairy & Provisions", mobile: "9876543210", status: "Pending", totalAmount: 4500, items: "Sudha Gold: 40 Pkt, Toned: 20 Pkt" },
       { id: "ORD002", shopName: "Kishan Milk Parlour", mobile: "9123456789", status: "Pending", totalAmount: 2800, items: "Sudha Gold: 20 Pkt, Cow Milk: 15 Pkt" },
@@ -43,7 +39,6 @@ export default function DeliveryDashboard() {
     ]);
   }, [selectedDate]);
 
-  // 📸 १. प्रोफाइल फोटो लाइव क्लाउडिनरी अपलोडर
   const handlePhotoChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -54,7 +49,7 @@ export default function DeliveryDashboard() {
       formData.append("image", file);
 
       const token = localStorage.getItem("sudha_token");
-      // आपके बैकएंड के प्रोफाइल इमेज अपलोडर नोड पर हिट करेगा
+
       const res = await axios.post(`${API_URL}/users/update-profile-photo`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -67,7 +62,6 @@ export default function DeliveryDashboard() {
         window.Swal.fire({ title: "Success ✓", text: "Profile picture updated instantly.", icon: "success" });
       }
     } catch (err) {
-      // टेस्टिंग के लिए लोकल यूआरएल रिफ्लेक्शन बैकअप
       const localUrl = URL.createObjectURL(file);
       setAgentDetails({ ...agentDetails, profilePhoto: localUrl });
       window.Swal.fire({ title: "Local Sync", text: "Profile preview updated successfully.", icon: "success" });
@@ -76,7 +70,6 @@ export default function DeliveryDashboard() {
     }
   };
 
-  // 🟥 २. मार्क एज़ डिलीवर्ड एक्शन चेन
   const handleMarkAsDelivered = async (orderId, shopName, amount) => {
     window.Swal.fire({
       title: "Confirm Delivery?",
@@ -95,7 +88,6 @@ export default function DeliveryDashboard() {
           },
         });
         try {
-          // लाइव डेटाबेस अपडेट ट्रिगर
           setOrders((prev) => prev.map((o) => (o.id === orderId ? { ...o, status: "Completed", time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) } : o)));
           setPayments((prev) => [...prev, { id: `PAY-${Date.now()}`, shopName, amount, mode: "Cash / Currency", date: selectedDate, time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) }]);
           window.Swal.fire({ title: "Success 🎉", text: "Order marked as completed and recovery added to collection matrix.", icon: "success" });
@@ -106,7 +98,6 @@ export default function DeliveryDashboard() {
     });
   };
 
-  // 🔒 ३. 100% कड़क पुष्टिकरण लॉगआउट (Confirm Logout SweeAlert Check)
   const handleLogoutAction = () => {
     window.Swal.fire({
       title: "Confirm Logout? 🤔",
@@ -134,7 +125,6 @@ export default function DeliveryDashboard() {
     });
   };
 
-  // 📥 ४. कस्टम ग्रैंड पीडीएफ रिपोर्ट जनरेटर (jsPDF Grid Matrix Layout)
   const handleDownloadPdfReport = () => {
     const doc = new jsPDF();
     doc.setFont("helvetica", "bold");
@@ -168,14 +158,12 @@ export default function DeliveryDashboard() {
     doc.save(`Sudha_Logistics_Report_${selectedDate}_${activeTab}.pdf`);
   };
 
-  // Live Metric Calculation Engine
   const pendingCount = orders.filter((o) => o.status === "Pending").length;
   const completedCount = orders.filter((o) => o.status === "Completed").length;
   const totalRecovery = payments.reduce((acc, curr) => acc + curr.amount, 0);
 
   return (
     <div className="bg-gray-50/50 min-h-screen text-xs font-semibold text-gray-700 flex flex-col antialiased select-none h-screen overflow-hidden w-full">
-      {/* 🚀 TOP MAIN NAVIGATION HEADER bar */}
       <div className="bg-indigo-600 text-white p-3 px-4 flex items-center justify-between shadow-md flex-shrink-0">
         <div className="flex items-center gap-3">
           <button onClick={() => setIsDrawerOpen(true)} className="p-1 hover:bg-indigo-700 rounded-lg transition active:scale-95">
@@ -191,11 +179,9 @@ export default function DeliveryDashboard() {
         </button>
       </div>
 
-      {/* 📐 3-LINE SLIDE-OUT PROFILE SIDEBAR DRAWER */}
       {isDrawerOpen && (
         <div className="fixed inset-0 bg-black/40 z-50 animate-fade-in flex">
           <div className="bg-white w-72 h-full shadow-2xl flex flex-col animate-slide-right border-r border-gray-100">
-            {/* Drawer Header Profile Node */}
             <div className="bg-gradient-to-br from-indigo-600 to-indigo-700 p-5 pt-8 text-white relative">
               <button onClick={() => setIsDrawerOpen(false)} className="absolute top-4 right-4 p-1 bg-indigo-800/40 hover:bg-indigo-900/40 rounded-full transition">
                 <X className="w-4 h-4 text-white" />
@@ -215,7 +201,6 @@ export default function DeliveryDashboard() {
               </div>
             </div>
 
-            {/* Non-Editable Fixed Profile Details Sheet Grid */}
             <div className="flex-1 p-5 space-y-4 font-medium text-gray-500 overflow-y-auto">
               <div className="border-b border-gray-100 pb-2 mb-1">
                 <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">Verified Agent Coordinates</span>
@@ -250,7 +235,6 @@ export default function DeliveryDashboard() {
               </div>
             </div>
 
-            {/* Drawer Logout Trigger */}
             <div className="p-4 border-t border-gray-100 bg-gray-50/50">
               <button onClick={handleLogoutAction} className="w-full flex items-center justify-center gap-2 bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 font-black py-2 rounded-xl transition uppercase tracking-wider shadow-sm">
                 <LogOut className="w-3.5 h-3.5" />
@@ -261,7 +245,6 @@ export default function DeliveryDashboard() {
         </div>
       )}
 
-      {/* 📊 MID LEVEL METRIC STATUS COUNT COUNTERS */}
       <div className="p-3 px-4 bg-white border-b border-gray-200 grid grid-cols-3 gap-3 flex-shrink-0 shadow-sm">
         <div onClick={() => setActiveTab("pending")} className={`p-2 px-3 rounded-xl border text-center cursor-pointer transition flex flex-col justify-between ${activeTab === "pending" ? "bg-amber-50 border-amber-300 ring-2 ring-amber-400/20" : "bg-gray-50/50 border-gray-200"}`}>
           <span className="text-[9px] font-black text-amber-600 uppercase tracking-widest block mb-0.5">PENDING</span>
@@ -286,7 +269,6 @@ export default function DeliveryDashboard() {
         </div>
       </div>
 
-      {/* 🔍 FILTER CONTROL BLOCK: SEARCH & DATE & PDF ENGINE */}
       <div className="p-3 bg-white border-b border-gray-100 flex flex-col gap-2 flex-shrink-0">
         <div className="flex gap-2">
           <div className="relative flex-1">
@@ -304,9 +286,7 @@ export default function DeliveryDashboard() {
         </button>
       </div>
 
-      {/* 📦 CORE CONTENT LIST GRID - THREE SECTIONS LAYOUT */}
       <div className="flex-1 overflow-y-auto p-4 space-y-3 pb-10 scrollbar-none">
-        {/* TAB A: PENDING DELIVERIES SECTION */}
         {activeTab === "pending" &&
           (orders.filter((o) => o.status === "Pending" && o.shopName.toLowerCase().includes(searchQuery.toLowerCase())).length === 0 ? (
             <div className="text-center py-12 border-2 border-dashed border-gray-200 rounded-2xl p-5 text-gray-400 flex flex-col items-center gap-2 font-bold">
@@ -336,7 +316,6 @@ export default function DeliveryDashboard() {
               ))
           ))}
 
-        {/* TAB B: COMPLETED DELIVERIES ARCHIVE */}
         {activeTab === "completed" &&
           (orders.filter((o) => o.status === "Completed" && o.shopName.toLowerCase().includes(searchQuery.toLowerCase())).length === 0 ? (
             <div className="text-center py-12 border-2 border-dashed border-gray-200 rounded-2xl p-5 text-gray-400 flex flex-col items-center gap-2 font-bold">
@@ -362,7 +341,6 @@ export default function DeliveryDashboard() {
               ))
           ))}
 
-        {/* TAB C: LIVE COLLECTION & FINANCIAL RECOVERY GRID */}
         {activeTab === "collected" &&
           (payments.filter((p) => p.shopName.toLowerCase().includes(searchQuery.toLowerCase())).length === 0 ? (
             <div className="text-center py-12 border-2 border-dashed border-gray-200 rounded-2xl p-5 text-gray-400 flex flex-col items-center gap-2 font-bold">
