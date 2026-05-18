@@ -38,18 +38,10 @@ export default function Storefront() {
     }
   }, [cart, user]);
 
-  useEffect(() => {
-    if (user?.userProfilePic) {
-      setProfilePic(user.userProfilePic);
-
-      localStorage.setItem("sudha_profile_pic", user.userProfilePic);
-    }
-  }, [user]);
-
   const handlePhotoChange = async (e) => {
-    const files = e.target.files;
+    const file = e.target.files?.[0];
 
-    if (!files || files.length === 0) return;
+    if (!file) return;
 
     try {
       setPhotoLoading(true);
@@ -74,7 +66,7 @@ export default function Storefront() {
         });
       };
 
-      const base64PayloadString = await convertToBase64(files[0]);
+      const base64PayloadString = await convertToBase64(file);
 
       const token = localStorage.getItem("sudha_token");
 
@@ -90,22 +82,10 @@ export default function Storefront() {
           },
         },
       );
+
       console.log(res.data);
+
       if (res.data?.success) {
-        const updatedUrl = res.data.url || res.data.user?.userProfilePic;
-
-        setProfilePic(updatedUrl);
-
-        localStorage.setItem("sudha_profile_pic", updatedUrl);
-
-        const existingUser = JSON.parse(localStorage.getItem("sudha_user"));
-
-        if (existingUser) {
-          existingUser.userProfilePic = updatedUrl;
-
-          localStorage.setItem("sudha_user", JSON.stringify(existingUser));
-        }
-
         window.Swal.close();
 
         await window.Swal.fire({
@@ -114,6 +94,8 @@ export default function Storefront() {
           icon: "success",
           confirmButtonText: "OK",
         });
+
+        fetchDashboardData();
       } else {
         window.Swal.close();
 
