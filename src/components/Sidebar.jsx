@@ -13,7 +13,7 @@ export default function Sidebar({ currentPanel, setCurrentPanel, isOpen, setIsOp
     { id: "register-user", text: "Register Retailer/Staff", icon: UserPlus },
     { id: "register-delivery", text: "Register Delivery Boy", icon: UserPlus },
     { id: "manage-delivery", text: "Manage Delivery Boy", icon: Users },
-    { id: "manage-user", text: "Manage Retailer/Staff", icon: Users },
+    { id: "manage-user", text: "Manage Retailer", icon: Users },
     { id: "invoice-entry", text: "Dairy Invoice Entry", icon: FileText },
     { id: "order-history", text: "Order History", icon: History },
     { id: "sales-history", text: "Sales History", icon: BarChart3 },
