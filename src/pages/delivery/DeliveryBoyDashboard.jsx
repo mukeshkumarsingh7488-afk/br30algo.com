@@ -60,13 +60,13 @@ export default function DeliveryDashboard() {
   }, [selectedDate]);
 
   const handlePhotoChange = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
 
     try {
       setPhotoLoading(true);
       const formData = new FormData();
-      formData.append("image", file);
+      formData.append("profilePhoto", files[0]);
 
       const token = localStorage.getItem("sudha_token");
       const res = await axios.post(`${API_URL}/users/update-profile`, formData, {
@@ -77,12 +77,15 @@ export default function DeliveryDashboard() {
       });
 
       if (res.data?.success) {
-        setAgentDetails((prev) => ({ ...prev, profilePhoto: res.data.url || res.data.user?.profilePhoto }));
-        window.Swal.fire({ title: "Success ✓", text: "Profile picture updated successfully.", icon: "success" });
+        setAgentDetails((prev) => ({
+          ...prev,
+          profilePhoto: res.data.url || res.data.user?.profilePhoto,
+        }));
+        window.Swal.fire({ title: "Success ✓", text: "Profile picture saved inside database.", icon: "success" });
         fetchDashboardData();
       }
     } catch (err) {
-      window.Swal.fire({ title: "Upload Failed", text: err.response?.data?.message || "Role authorization restriction.", icon: "error" });
+      window.Swal.fire({ title: "Upload Failed", text: err.response?.data?.message || "Server upload synchronization error.", icon: "error" });
     } finally {
       setPhotoLoading(false);
     }

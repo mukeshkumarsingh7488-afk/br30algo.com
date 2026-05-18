@@ -4,7 +4,7 @@ import { useProducts } from "../../context/ProductContext";
 import { ShoppingBag, ShoppingCart, User, LogOut, Package, CheckCircle2, Menu, X, Edit3, Camera, Search, Layers, Trash2, Wallet, Calendar, BadgeCheck } from "lucide-react";
 import axios from "axios";
 
-const API_URL = "http://localhost:5000/api";
+const API_URL = import.meta.env.VITE_API_URL || "https://onrender.com";
 
 export default function Storefront() {
   const { user, logout, updateUserProfileState } = useAuth();
@@ -350,9 +350,7 @@ export default function Storefront() {
       <div className="w-full flex flex-col bg-white sticky top-0 z-30 shadow-sm flex-shrink-0">
         {/* 1. ब्लू स्टोर नाम हेडर */}
         <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-4 py-3 shadow-md flex items-center justify-between">
-          <div className="w-8 h-8 border border-white/40 rounded-full overflow-hidden bg-white/20 flex items-center justify-center flex-shrink-0 shadow-inner">
-            {profilePic ? <img src={profilePic} alt="" className="w-full h-full object-cover" /> : <User className="w-4 h-4 text-white/80" />}
-          </div>
+          <div className="w-8 h-8 border border-white/40 rounded-full overflow-hidden bg-white/20 flex items-center justify-center flex-shrink-0 shadow-inner">{profilePic ? <img src={profilePic} alt="" className="w-full h-full object-cover" /> : <User className="w-4 h-4 text-white/80" />}</div>
           <div className="flex-1 text-center px-1">
             <h1 className="text-xs font-black uppercase tracking-wide truncate max-w-[190px] mx-auto flex items-center justify-center gap-1">
               <span>{user?.shopName || "MUKESH JENREL STORE"}</span>
@@ -373,21 +371,11 @@ export default function Storefront() {
               <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
                 <Search className="w-3.5 h-3.5" />
               </span>
-              <input
-                type="text"
-                placeholder="Search Milk, Dahi, Lassi or any product..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-8 pr-3 py-1.5 bg-gray-50 border border-gray-200 rounded-xl outline-none text-xs font-medium focus:bg-white focus:ring-2 focus:ring-blue-500 transition shadow-inner"
-              />
+              <input type="text" placeholder="Search Milk, Dahi, Lassi or any product..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full pl-8 pr-3 py-1.5 bg-gray-50 border border-gray-200 rounded-xl outline-none text-xs font-medium focus:bg-white focus:ring-2 focus:ring-blue-500 transition shadow-inner" />
             </div>
             <div className="flex items-center space-x-1 overflow-x-auto pb-1 scrollbar-none">
               {categoriesMenu.map((cat) => (
-                <button
-                  key={cat}
-                  onClick={() => setActiveCategory(cat)}
-                  className={`px-2.5 py-1 rounded-lg text-[9px] font-black uppercase border transition-all flex-shrink-0 ${activeCategory === cat ? "bg-blue-600 border-blue-600 text-white shadow-sm" : "bg-white border-gray-200 text-gray-600"}`}
-                >
+                <button key={cat} onClick={() => setActiveCategory(cat)} className={`px-2.5 py-1 rounded-lg text-[9px] font-black uppercase border transition-all flex-shrink-0 ${activeCategory === cat ? "bg-blue-600 border-blue-600 text-white shadow-sm" : "bg-white border-gray-200 text-gray-600"}`}>
                   {cat}
                 </button>
               ))}
@@ -406,13 +394,7 @@ export default function Storefront() {
               return (
                 <div key={p._id} className="bg-white p-2.5 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between gap-2.5">
                   <div className="flex items-center space-x-3 truncate">
-                    <div className="w-12 h-12 bg-gray-50 border rounded-xl flex items-center justify-center shadow-inner overflow-visible flex-shrink-0">
-                      {hasLiveImg ? (
-                        <img src={p.image} alt="" className="w-full h-full object-contain rounded-lg store-floating-img cursor-pointer" />
-                      ) : (
-                        <span className="text-xl store-floating-img">{p.image || "🥛"}</span>
-                      )}
-                    </div>
+                    <div className="w-12 h-12 bg-gray-50 border rounded-xl flex items-center justify-center shadow-inner overflow-visible flex-shrink-0">{hasLiveImg ? <img src={p.image} alt="" className="w-full h-full object-contain rounded-lg store-floating-img cursor-pointer" /> : <span className="text-xl store-floating-img">{p.image || "🥛"}</span>}</div>
                     <div className="truncate flex flex-col">
                       <span className="text-gray-800 text-xs font-bold truncate">{p.name}</span>
                       <span className="text-[9px] text-gray-400 font-bold font-mono truncate mt-0.5">{p.packText || "1 Crate (10 Ltr / 20 Pcs)"}</span>
@@ -423,10 +405,7 @@ export default function Storefront() {
                   </div>
                   <div>
                     {cartQty === 0 ? (
-                      <button
-                        onClick={() => updateCartQty(p._id, 1)}
-                        className="px-3 py-1 bg-blue-50 border border-blue-200 text-blue-600 font-black text-[10px] rounded-xl hover:bg-blue-100 shadow-sm transition uppercase"
-                      >
+                      <button onClick={() => updateCartQty(p._id, 1)} className="px-3 py-1 bg-blue-50 border border-blue-200 text-blue-600 font-black text-[10px] rounded-xl hover:bg-blue-100 shadow-sm transition uppercase">
                         ADD +
                       </button>
                     ) : (
@@ -462,13 +441,7 @@ export default function Storefront() {
                 return (
                   <div key={p._id} className="bg-white p-2.5 rounded-2xl border border-emerald-200/50 shadow-sm flex items-center justify-between gap-2.5">
                     <div className="flex items-center space-x-3 truncate">
-                      <div className="w-12 h-12 bg-white border border-gray-100 rounded-xl flex items-center justify-center shadow-inner flex-shrink-0">
-                        {hasLiveImg ? (
-                          <img src={p.image} alt="" className="w-full h-full object-contain rounded-lg store-floating-img" />
-                        ) : (
-                          <span className="text-xl store-floating-img">{p.image || "🥛"}</span>
-                        )}
-                      </div>
+                      <div className="w-12 h-12 bg-white border border-gray-100 rounded-xl flex items-center justify-center shadow-inner flex-shrink-0">{hasLiveImg ? <img src={p.image} alt="" className="w-full h-full object-contain rounded-lg store-floating-img" /> : <span className="text-xl store-floating-img">{p.image || "🥛"}</span>}</div>
                       <div className="truncate flex flex-col">
                         <span className="text-gray-800 text-xs font-bold truncate">{p.name}</span>
                         <span className="text-[9px] text-gray-400 font-bold font-mono mt-0.5">{p.packText}</span>
@@ -480,10 +453,7 @@ export default function Storefront() {
                     </div>
                     <div>
                       {cartQty === 0 ? (
-                        <button
-                          onClick={() => updateCartQty(p._id, 1)}
-                          className="px-3 py-1 bg-emerald-600 border border-emerald-600 text-white font-black text-[10px] rounded-xl shadow-sm hover:bg-emerald-700 transition uppercase"
-                        >
+                        <button onClick={() => updateCartQty(p._id, 1)} className="px-3 py-1 bg-emerald-600 border border-emerald-600 text-white font-black text-[10px] rounded-xl shadow-sm hover:bg-emerald-700 transition uppercase">
                           ADD +
                         </button>
                       ) : (
@@ -565,10 +535,7 @@ export default function Storefront() {
                         .toLocaleString("en-IN")}
                     </span>
                   </div>
-                  <button
-                    onClick={handlePlaceOrderSubmit}
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-2 rounded-xl transition text-[11px] uppercase tracking-wider shadow-md mt-2"
-                  >
+                  <button onClick={handlePlaceOrderSubmit} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-2 rounded-xl transition text-[11px] uppercase tracking-wider shadow-md mt-2">
                     Confirm & Dispatch Order
                   </button>
                 </div>
@@ -593,36 +560,20 @@ export default function Storefront() {
 
       {/* 4-BTN MASTER BOTTOM NAVIGATION STRIP */}
       <div className="fixed bottom-0 inset-x-0 bg-white border-t border-gray-200 shadow-2xl max-w-md mx-auto grid grid-cols-4 py-1.5 px-1 z-40 flex-shrink-0">
-        <button
-          onClick={() => setActiveTab("store")}
-          className={`flex flex-col items-center justify-center py-1 rounded-xl transition ${activeTab === "store" ? "text-blue-600 bg-blue-50 font-black" : "text-gray-400 hover:text-gray-700 font-bold"}`}
-        >
+        <button onClick={() => setActiveTab("store")} className={`flex flex-col items-center justify-center py-1 rounded-xl transition ${activeTab === "store" ? "text-blue-600 bg-blue-50 font-black" : "text-gray-400 hover:text-gray-700 font-bold"}`}>
           <ShoppingBag className="w-4 h-4" />
           <span className="text-[8px] mt-0.5 uppercase tracking-tighter">Store</span>
         </button>
-        <button
-          onClick={() => setActiveTab("instock")}
-          className={`flex flex-col items-center justify-center py-1 rounded-xl transition ${activeTab === "instock" ? "text-emerald-600 bg-emerald-50 font-black border border-emerald-100" : "text-gray-400 hover:text-gray-700 font-bold"}`}
-        >
+        <button onClick={() => setActiveTab("instock")} className={`flex flex-col items-center justify-center py-1 rounded-xl transition ${activeTab === "instock" ? "text-emerald-600 bg-emerald-50 font-black border border-emerald-100" : "text-gray-400 hover:text-gray-700 font-bold"}`}>
           <Layers className="w-4 h-4 text-emerald-500" />
           <span className="text-[8px] mt-0.5 uppercase tracking-tighter">In Stock</span>
         </button>
-        <button
-          onClick={() => setActiveTab("cart")}
-          className={`flex flex-col items-center justify-center py-1 rounded-xl transition relative ${activeTab === "cart" ? "text-blue-600 bg-blue-50 font-black border border-blue-100" : "text-gray-400 hover:text-gray-700 font-bold"}`}
-        >
+        <button onClick={() => setActiveTab("cart")} className={`flex flex-col items-center justify-center py-1 rounded-xl transition relative ${activeTab === "cart" ? "text-blue-600 bg-blue-50 font-black border border-blue-100" : "text-gray-400 hover:text-gray-700 font-bold"}`}>
           <ShoppingCart className="w-4 h-4 text-indigo-500" />
           <span className="text-[8px] mt-0.5 uppercase tracking-tighter">My Cart</span>
-          {Object.keys(cart).length > 0 && (
-            <span className="absolute top-0.5 right-2 bg-red-500 text-white rounded-full text-[7px] font-black w-3.5 h-3.5 flex items-center justify-center animate-pulse">
-              {Object.values(cart).reduce((a, b) => a + b, 0)}
-            </span>
-          )}
+          {Object.keys(cart).length > 0 && <span className="absolute top-0.5 right-2 bg-red-500 text-white rounded-full text-[7px] font-black w-3.5 h-3.5 flex items-center justify-center animate-pulse">{Object.values(cart).reduce((a, b) => a + b, 0)}</span>}
         </button>
-        <button
-          onClick={() => setActiveTab("orders")}
-          className={`flex flex-col items-center justify-center py-1 rounded-xl transition ${activeTab === "orders" ? "text-blue-600 bg-blue-50 font-black" : "text-gray-400 hover:text-gray-700 font-bold"}`}
-        >
+        <button onClick={() => setActiveTab("orders")} className={`flex flex-col items-center justify-center py-1 rounded-xl transition ${activeTab === "orders" ? "text-blue-600 bg-blue-50 font-black" : "text-gray-400 hover:text-gray-700 font-bold"}`}>
           <Package className="w-4 h-4" />
           <span className="text-[8px] mt-0.5 uppercase tracking-tighter">My Orders</span>
         </button>
@@ -690,10 +641,7 @@ export default function Storefront() {
                     <Wallet className="w-3.5 h-3.5" />
                     <span>Sudha Smart Wallet</span>
                   </span>
-                  <button
-                    onClick={handleAddWalletMoney}
-                    className="bg-white/20 hover:bg-white/30 text-white px-2 py-0.5 rounded-lg text-[9px] font-black uppercase tracking-tight flex items-center gap-0.5"
-                  >
+                  <button onClick={handleAddWalletMoney} className="bg-white/20 hover:bg-white/30 text-white px-2 py-0.5 rounded-lg text-[9px] font-black uppercase tracking-tight flex items-center gap-0.5">
                     ➕ Load UPI
                   </button>
                 </div>
@@ -710,12 +658,7 @@ export default function Storefront() {
                   <label className="block text-[9px] font-bold text-gray-400 mb-1">Proprietor Name</label>
                   {isEditingName ? (
                     <div className="flex space-x-1.5">
-                      <input
-                        type="text"
-                        value={proprietorName}
-                        onChange={(e) => setProprietorName(e.target.value)}
-                        className="w-full px-2.5 py-1 border border-gray-300 rounded-xl outline-none font-bold text-gray-700 text-xs bg-white focus:ring-2 focus:ring-blue-500 shadow-sm"
-                      />
+                      <input type="text" value={proprietorName} onChange={(e) => setProprietorName(e.target.value)} className="w-full px-2.5 py-1 border border-gray-300 rounded-xl outline-none font-bold text-gray-700 text-xs bg-white focus:ring-2 focus:ring-blue-500 shadow-sm" />
                       <button type="button" onClick={handleUpdateNameSubmit} className="p-1.5 bg-blue-600 text-white rounded-xl shadow-sm font-bold text-[10px]">
                         Save
                       </button>
@@ -759,10 +702,7 @@ export default function Storefront() {
             </div>
 
             {/* लॉगआउट बटन */}
-            <button
-              onClick={logout}
-              className="w-full bg-red-50 hover:bg-red-100 border border-red-200 text-red-600 font-black py-2 rounded-xl transition flex items-center justify-center space-x-1.5 text-xs"
-            >
+            <button onClick={logout} className="w-full bg-red-50 hover:bg-red-100 border border-red-200 text-red-600 font-black py-2 rounded-xl transition flex items-center justify-center space-x-1.5 text-xs">
               <LogOut className="w-4 h-4" />
               <span>LOGOUT ACCOUNT</span>
             </button>
