@@ -230,45 +230,6 @@ export default function Storefront() {
     });
   };
 
-  const handleProfilePicChange = async (e) => {
-    const file = e.target.files && e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onloadend = async () => {
-      const base64Image = reader.result;
-      setProfilePic(base64Image);
-      window.Swal.fire({
-        title: "Uploading Profile Image...",
-        allowOutsideClick: false,
-        didOpen: () => {
-          window.Swal.showLoading();
-        },
-      });
-      try {
-        const response = await axios.put(`${API_URL}/users/update-profile/${user.id || user._id}`, { proprietor: proprietorName, photo: base64Image });
-        window.Swal.close();
-        if (response.data && response.data.success) {
-          const updatedUser = {
-            ...user,
-            proprietor: proprietorName,
-            photo: response.data.cloudPhotoUrl,
-            userProfilePic: response.data.cloudPhotoUrl,
-          };
-          updateUserProfileState(updatedUser);
-          window.Swal.fire({
-            title: "Profile Updated!",
-            text: "Your fresh identities are locked successfully.",
-            icon: "success",
-            timer: 1500,
-          });
-        }
-      } catch (err) {
-        window.Swal.close();
-      }
-    };
-  };
-
   const handleUpdateNameSubmit = async () => {
     if (!proprietorName.trim()) return;
     window.Swal.fire({
