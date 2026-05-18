@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { Menu, X, LogOut, User, Phone, Mail, MapPin, Search, Calendar, Download, CheckCircle, Clock, IndianRupee, Camera, RefreshCw, FileText } from "lucide-react";
 
-const API_URL = import.meta.env.VITE_API_URL || "https://onrender.com";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 export default function DeliveryDashboard() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);

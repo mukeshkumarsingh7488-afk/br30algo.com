@@ -4,7 +4,7 @@ import { useProducts } from "../../context/ProductContext";
 import { ShoppingBag, ShoppingCart, User, LogOut, Package, CheckCircle2, Menu, X, Edit3, Camera, Search, Layers, Trash2, Wallet, Calendar, BadgeCheck } from "lucide-react";
 import axios from "axios";
 
-const API_URL = import.meta.env.VITE_API_URL || "https://onrender.com";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 export default function Storefront() {
   const { user, logout, updateUserProfileState } = useAuth();
