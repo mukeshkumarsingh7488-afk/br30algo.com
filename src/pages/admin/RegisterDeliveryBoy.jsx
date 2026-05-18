@@ -41,11 +41,12 @@ export default function RegisterDeliveryBoy() {
 
       const res = await axios.post(
         `${API_URL}/users/send-otp`,
+        { email: formData.email },
         {
-          email: formData.email,
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
         },
       );
 
