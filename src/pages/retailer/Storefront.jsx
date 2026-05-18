@@ -16,14 +16,19 @@ export default function Storefront() {
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
-  const [profilePic, setProfilePic] = useState(user?.userProfilePic || null);
+  const [profilePic, setProfilePic] = useState(localStorage.getItem("sudha_profile_pic") || user?.userProfilePic || null);
+
   const [proprietorName, setProprietorName] = useState(user?.proprietor || "");
+
   const [isEditingName, setIsEditingName] = useState(false);
+
   const [walletBalance, setWalletBalance] = useState(user?.walletBalance || 0);
+
   const [photoLoading, setPhotoLoading] = useState(false);
 
   const [cart, setCart] = useState(() => {
     const savedCart = localStorage.getItem(`sudha_cart_${user?.id || user?._id}`);
+
     return savedCart ? JSON.parse(savedCart) : {};
   });
 
@@ -33,12 +38,22 @@ export default function Storefront() {
     }
   }, [cart, user]);
 
+  useEffect(() => {
+    if (user?.userProfilePic) {
+      setProfilePic(user.userProfilePic);
+
+      localStorage.setItem("sudha_profile_pic", user.userProfilePic);
+    }
+  }, [user]);
+
   const handlePhotoChange = async (e) => {
     const files = e.target.files;
+
     if (!files || files.length === 0) return;
 
     try {
       setPhotoLoading(true);
+
       window.Swal.fire({
         title: "Uploading Photo...",
         allowOutsideClick: false,
@@ -50,18 +65,24 @@ export default function Storefront() {
       const convertToBase64 = (targetFile) => {
         return new Promise((resolve, reject) => {
           const reader = new FileReader();
+
           reader.readAsDataURL(targetFile);
+
           reader.onload = () => resolve(reader.result);
+
           reader.onerror = (error) => reject(error);
         });
       };
 
       const base64PayloadString = await convertToBase64(files[0]);
+
       const token = localStorage.getItem("sudha_token");
 
       const res = await axios.post(
         `${API_URL}/users/update-profile`,
-        { profilePhoto: base64PayloadString },
+        {
+          profilePhoto: base64PayloadString,
+        },
         {
           headers: {
             "Content-Type": "application/json",
@@ -72,11 +93,31 @@ export default function Storefront() {
 
       if (res.data?.success) {
         const updatedUrl = res.data.url || res.data.user?.userProfilePic;
+
         setProfilePic(updatedUrl);
-        window.Swal.fire({ title: "Success ✓", text: "Profile picture securely locked inside database.", icon: "success" });
+
+        localStorage.setItem("sudha_profile_pic", updatedUrl);
+
+        const existingUser = JSON.parse(localStorage.getItem("sudha_user"));
+
+        if (existingUser) {
+          existingUser.userProfilePic = updatedUrl;
+
+          localStorage.setItem("sudha_user", JSON.stringify(existingUser));
+        }
+
+        window.Swal.fire({
+          title: "Success ✓",
+          text: "Profile picture updated successfully.",
+          icon: "success",
+        });
       }
     } catch (err) {
-      window.Swal.fire({ title: "Upload Failed", text: err.response?.data?.message || "Cloud storage connection error.", icon: "error" });
+      window.Swal.fire({
+        title: "Upload Failed",
+        text: err.response?.data?.message || "Cloud storage connection error.",
+        icon: "error",
+      });
     } finally {
       setPhotoLoading(false);
     }
