@@ -56,7 +56,7 @@ export default function Storefront() {
         });
       };
 
-      const base64PayloadString = await convertToBase64(files);
+      const base64PayloadString = await convertToBase64(files[0]);
       const token = localStorage.getItem("sudha_token");
 
       const res = await axios.post(
