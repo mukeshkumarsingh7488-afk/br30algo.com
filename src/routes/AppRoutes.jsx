@@ -84,9 +84,6 @@ export default function AppRoutes() {
         }
       />
 
-      <Route path="/sitemap.xml" element={<div ref={() => window.location.replace("/sitemap.xml")} />} />
-      <Route path="/robots.txt" element={<div ref={() => window.location.replace("/robots.txt")} />} />
-
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
