@@ -43,7 +43,6 @@ export default function RegisterDeliveryBoy() {
         {
           email: formData.email,
           otp: generatedOtp,
-          name: formData.proprietor || "Delivery Agent",
         },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -56,7 +55,7 @@ export default function RegisterDeliveryBoy() {
         window.Swal.fire({ title: "OTP Sent! 📩", text: "Verification code successfully dispatched to agent email.", icon: "success" });
       }
     } catch (err) {
-      window.Swal.fire({ title: "Gateway Error", text: "Failed to dispatch email verification tokens.", icon: "error" });
+      window.Swal.fire({ title: "Gateway Error", text: err.response?.data?.message || "Failed to dispatch email verification tokens.", icon: "error" });
     } finally {
       setOtpLoading(false);
     }
