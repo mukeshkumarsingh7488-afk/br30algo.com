@@ -84,6 +84,9 @@ export default function AppRoutes() {
         }
       />
 
+      <Route path="/sitemap.xml" element={null} />
+      <Route path="/robots.txt" element={null} />
+
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
