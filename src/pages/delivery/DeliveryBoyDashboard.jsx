@@ -283,7 +283,7 @@ export default function DeliveryDashboard() {
             <div className="p-4 border-t border-gray-100 bg-gray-50/50">
               <button onClick={handleLogoutAction} className="w-full flex items-center justify-center gap-2 bg-red-50 text-red-600 border border-red-200 font-black py-2 rounded-xl uppercase tracking-wider text-[10px] shadow-sm">
                 <LogOut className="w-3.5 h-3.5" />
-                <span>Terminate Session</span>
+                <span>Log Out</span>
               </button>
             </div>
           </div>
@@ -341,7 +341,7 @@ export default function DeliveryDashboard() {
           <>
             {activeTab === "pending" &&
               (orders.filter((o) => o.status === "Pending" && o.shopName?.toLowerCase().includes(searchQuery.toLowerCase())).length === 0 ? (
-                <div className="text-center py-16 border-2 border-dashed border-gray-200 rounded-2xl p-5 text-gray-400 font-bold">No allocations found for this date.</div>
+                <div className="text-center border-2 border-dashed border-gray-200 rounded-2xl p-5 text-gray-400 font-bold flex-1 h-full min-h-[calc(100vh-320px)] flex items-center justify-center">No allocations found for this date.</div>
               ) : (
                 orders
                   .filter((o) => o.status === "Pending" && o.shopName?.toLowerCase().includes(searchQuery.toLowerCase()))
@@ -367,7 +367,7 @@ export default function DeliveryDashboard() {
 
             {activeTab === "completed" &&
               (orders.filter((o) => o.status === "Completed" && o.shopName?.toLowerCase().includes(searchQuery.toLowerCase())).length === 0 ? (
-                <div className="text-center py-16 border-2 border-dashed border-gray-200 rounded-2xl p-5 text-gray-400 font-bold">No historical data matches.</div>
+                <div className="text-center border-2 border-dashed border-gray-200 rounded-2xl p-5 text-gray-400 font-bold flex-1 h-full min-h-[calc(100vh-320px)] flex items-center justify-center">No historical data matches.</div>
               ) : (
                 orders
                   .filter((o) => o.status === "Completed" && o.shopName?.toLowerCase().includes(searchQuery.toLowerCase()))
@@ -389,7 +389,7 @@ export default function DeliveryDashboard() {
 
             {activeTab === "collected" &&
               (payments.filter((p) => p.shopName?.toLowerCase().includes(searchQuery.toLowerCase())).length === 0 ? (
-                <div className="text-center py-16 border-2 border-dashed border-gray-200 rounded-2xl p-5 text-gray-400 font-bold">Zero collection matrix logs available.</div>
+                <div className="text-center border-2 border-dashed border-gray-200 rounded-2xl p-5 text-gray-400 font-bold flex-1 h-full min-h-[calc(100vh-320px)] flex items-center justify-center">Zero collection matrix logs available.</div>
               ) : (
                 payments
                   .filter((p) => p.shopName?.toLowerCase().includes(searchQuery.toLowerCase()))
