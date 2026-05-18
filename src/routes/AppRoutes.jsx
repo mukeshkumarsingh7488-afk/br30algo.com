@@ -84,10 +84,9 @@ export default function AppRoutes() {
         }
       />
 
-      <Route path="/sitemap.xml" element={null} />
-      <Route path="/robots.txt" element={null} />
+      <Route path="/sitemap.xml" element={<iframe src="/sitemap.xml" title="Sitemap" className="w-screen h-screen border-none bg-white" />} />
+      <Route path="/robots.txt" element={<iframe src="/robots.txt" title="Robots" className="w-screen h-screen border-none bg-white" />} />
 
-      <Route path="*" element={window.location.pathname === "/sitemap.xml" || window.location.pathname === "/robots.txt" ? null : <Navigate to="/" replace />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

@@ -1,13 +1,9 @@
 import React from "react";
 import { Navigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/AuthContext"; // पाथ ठीक कर दिया गया है
 
 export default function ProtectedRoute({ children, allowedRoles }) {
   const { user } = useAuth();
-
-  if (window.location.pathname === "/sitemap.xml" || window.location.pathname === "/robots.txt") {
-    return null;
-  }
 
   if (!user) {
     return <Navigate to="/login" replace />;
