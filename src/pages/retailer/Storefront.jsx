@@ -86,6 +86,12 @@ export default function Storefront() {
       console.log(res.data);
 
       if (res.data?.success) {
+        const updatedUrl = res.data.url || res.data.user?.userProfilePic;
+
+        setProfilePic(updatedUrl);
+
+        localStorage.setItem("sudha_profile_pic", updatedUrl);
+
         window.Swal.close();
 
         await window.Swal.fire({
@@ -94,8 +100,6 @@ export default function Storefront() {
           icon: "success",
           confirmButtonText: "OK",
         });
-
-        fetchDashboardData();
       } else {
         window.Swal.close();
 
