@@ -664,7 +664,7 @@ export default function Storefront() {
                     {profilePic ? <img src={profilePic} alt="" className="w-full h-full object-cover" /> : <User className="w-5 h-5 text-gray-400" />}
                     <label className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 cursor-pointer transition">
                       <Camera className="w-3.5 h-3.5 text-white" />
-                      <input type="file" accept="image/*" onChange={handleProfilePicChange} className="hidden" />
+                      <input type="file" accept="image/*" onChange={handlePhotoChange} className="hidden" />
                     </label>
                   </div>
                   <div className="truncate">
