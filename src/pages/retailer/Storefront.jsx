@@ -106,16 +106,29 @@ export default function Storefront() {
           localStorage.setItem("sudha_user", JSON.stringify(existingUser));
         }
 
-        window.Swal.fire({
+        window.Swal.close();
+
+        await window.Swal.fire({
           title: "Success ✓",
           text: "Profile picture updated successfully.",
           icon: "success",
+          confirmButtonText: "OK",
+        });
+      } else {
+        window.Swal.close();
+
+        window.Swal.fire({
+          title: "Upload Failed",
+          text: "Server did not return success response.",
+          icon: "error",
         });
       }
     } catch (err) {
+      window.Swal.close();
+
       window.Swal.fire({
         title: "Upload Failed",
-        text: err.response?.data?.message || "Cloud storage connection error.",
+        text: err.response?.data?.message || err.message || "Cloud storage connection error.",
         icon: "error",
       });
     } finally {
