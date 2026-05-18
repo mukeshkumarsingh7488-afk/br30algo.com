@@ -63,32 +63,38 @@ export default function DeliveryDashboard() {
     const files = e.target.files;
     if (!files || files.length === 0) return;
 
-    try {
-      setPhotoLoading(true);
-      const formData = new FormData();
-      formData.append("profilePhoto", files[0]);
+    const targetFile = files[0];
+    const fileReader = new FileReader();
 
-      const token = localStorage.getItem("sudha_token");
-      const res = await axios.post(`${API_URL}/users/update-profile`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${token}`,
-        },
-      });
+    setPhotoLoading(true);
+    fileReader.readAsDataURL(targetFile);
 
-      if (res.data?.success) {
-        setAgentDetails((prev) => ({
-          ...prev,
-          profilePhoto: res.data.url || res.data.user?.profilePhoto,
-        }));
-        window.Swal.fire({ title: "Success ✓", text: "Profile picture saved inside database.", icon: "success" });
-        fetchDashboardData();
+    fileReader.onload = async () => {
+      try {
+        const base64PayloadString = fileReader.result;
+        const token = localStorage.getItem("sudha_token");
+
+        const res = await axios.post(
+          `${API_URL}/users/update-profile`,
+          { profilePhoto: base64PayloadString },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        );
+
+        if (res.data?.success) {
+          window.Swal.fire({ title: "Success ✓", text: "Profile picture securely locked inside database.", icon: "success" });
+          fetchDashboardData();
+        }
+      } catch (err) {
+        window.Swal.fire({ title: "Upload Failed", text: err.response?.data?.message || "Cloud storage network error.", icon: "error" });
+      } finally {
+        setPhotoLoading(false);
       }
-    } catch (err) {
-      window.Swal.fire({ title: "Upload Failed", text: err.response?.data?.message || "Server upload synchronization error.", icon: "error" });
-    } finally {
-      setPhotoLoading(false);
-    }
+    };
   };
 
   const handleMarkAsDelivered = async (orderId, shopName, amount) => {
@@ -228,7 +234,7 @@ export default function DeliveryDashboard() {
 
               <div className="flex flex-col items-center text-center mt-2">
                 <div className="relative">
-                  <div className="w-16 h-16 rounded-full border-2 border-indigo-200 overflow-hidden bg-white shadow-inner flex items-center justify-center">{photoLoading ? <RefreshCw className="w-5 h-5 text-indigo-500 animate-spin" /> : agentDetails?.profilePhoto ? <img src={agentDetails.profilePhoto} alt="Profile" className="w-full h-full object-cover" /> : <User className="w-8 h-8 text-indigo-400" />}</div>
+                  <div className="w-16 h-16 rounded-full border-2 border-indigo-200 overflow-hidden bg-white shadow-inner flex items-center justify-center">{photoLoading ? <RefreshCw className="w-5 h-5 text-indigo-500 animate-spin" /> : agentDetails?.userProfilePic ? <img src={agentDetails.userProfilePic} alt="Profile" className="w-full h-full object-cover" /> : <User className="w-8 h-8 text-indigo-400" />}</div>
                   <label className="absolute bottom-0 right-0 p-1.5 bg-white border border-gray-200 text-indigo-600 rounded-full shadow-md cursor-pointer hover:bg-indigo-50 transition active:scale-90">
                     <Camera className="w-3.5 h-3.5" />
                     <input type="file" accept="image/*" onChange={handlePhotoChange} className="hidden" />
