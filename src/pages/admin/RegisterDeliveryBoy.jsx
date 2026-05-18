@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { User, Phone, Mail, Key, ShieldCheck, MapPin, Eye, EyeOff, Lock, MessageSquare } from "lucide-react";
 
-const API_URL = import.meta.env.VITE_API_URL || "https://onrender.com";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 export default function RegisterDeliveryBoy() {
   const [showPassword, setShowPassword] = useState(false);
