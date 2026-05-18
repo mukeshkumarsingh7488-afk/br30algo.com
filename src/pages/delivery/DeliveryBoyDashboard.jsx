@@ -5,23 +5,18 @@ import { Menu, X, LogOut, User, Phone, Mail, MapPin, Search, Calendar, Download,
 const API_URL = import.meta.env.VITE_API_URL || "https://onrender.com";
 
 export default function DeliveryDashboard() {
-  // UI & Drawer States
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState("pending"); // pending | completed | collected
+  const [activeTab, setActiveTab] = useState("pending");
   const [searchQuery, setSearchQuery] = useState("");
-
-  // ⚡ डेट फिक्स: आज की तारीख बाय-डिफ़ॉल्ट 100% सही लोड होगी
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split("T")[0]);
   const drawerRef = useRef(null);
 
-  // 📡 100% लाइव डायनामिक मोंगोडीबी डेटा स्टेट्स
   const [agentDetails, setAgentDetails] = useState(null);
   const [orders, setOrders] = useState([]);
   const [payments, setPayments] = useState([]);
   const [loading, setLoading] = useState(false);
   const [photoLoading, setPhotoLoading] = useState(false);
 
-  // 🛡️ बाहर कहीं भी स्क्रीन पर क्लिक करने से ड्रॉर अपने आप बंद (Click Outside Close Filter)
   useEffect(() => {
     function handleClickOutside(event) {
       if (drawerRef.current && !drawerRef.current.contains(event.target)) {
@@ -34,30 +29,27 @@ export default function DeliveryDashboard() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isDrawerOpen]);
 
-  // 🔄 लाइव मोंगोडीबी एपीआई से एजेंट प्रोफाइल और ऑर्डर्स सिंक इंजन
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
       const token = localStorage.getItem("sudha_token");
 
-      // १. लाइव एजेंट प्रोफाइल डिटेल्स API सिंक (No Hardcode)
-      const profileRes = await axios.get(`${API_URL}/users/profile/me`, {
+      const profileRes = await axios.get(`${API_URL}/users/profile`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (profileRes.data?.success) {
-        setAgentDetails(profileRes.data.data);
+        setAgentDetails(profileRes.data.user || profileRes.data.data);
       }
 
-      // २. लाइव ऑर्डर्स एवं कलेक्शन डेटाबेस ट्रिगर (तारीख के अनुसार फ़िल्टर)
       const ordersRes = await axios.get(`${API_URL}/orders/delivery-grid?date=${selectedDate}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (ordersRes.data?.success) {
-        setOrders(ordersRes.data.orders);
-        setPayments(ordersRes.data.payments);
+        setOrders(ordersRes.data.orders || []);
+        setPayments(ordersRes.data.payments || []);
       }
     } catch (err) {
-      console.error("API Fetch Error:", err);
+      console.error(err);
     } finally {
       setLoading(false);
     }
@@ -67,7 +59,6 @@ export default function DeliveryDashboard() {
     fetchDashboardData();
   }, [selectedDate]);
 
-  // 📸 ३. प्रोफाइल फोटो चेंज फिक्स: सीधे मोंगोडीबी में सेव होगी, रिफ्रेश करने पर गायब नहीं होगी!
   const handlePhotoChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -75,10 +66,10 @@ export default function DeliveryDashboard() {
     try {
       setPhotoLoading(true);
       const formData = new FormData();
-      formData.append("profilePhoto", file);
+      formData.append("image", file);
 
       const token = localStorage.getItem("sudha_token");
-      const res = await axios.post(`${API_URL}/users/update-profile-photo`, formData, {
+      const res = await axios.post(`${API_URL}/users/update-profile`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${token}`,
@@ -86,17 +77,17 @@ export default function DeliveryDashboard() {
       });
 
       if (res.data?.success) {
-        setAgentDetails((prev) => ({ ...prev, profilePhoto: res.data.url }));
-        window.Swal.fire({ title: "Success ✓", text: "Profile picture securely saved inside MongoDB cluster.", icon: "success" });
+        setAgentDetails((prev) => ({ ...prev, profilePhoto: res.data.url || res.data.user?.profilePhoto }));
+        window.Swal.fire({ title: "Success ✓", text: "Profile picture updated successfully.", icon: "success" });
+        fetchDashboardData();
       }
     } catch (err) {
-      window.Swal.fire({ title: "Upload Failed", text: err.response?.data?.message || "Server connection error.", icon: "error" });
+      window.Swal.fire({ title: "Upload Failed", text: err.response?.data?.message || "Role authorization restriction.", icon: "error" });
     } finally {
       setPhotoLoading(false);
     }
   };
 
-  // 🟥 ४. लाइव "MARK AS DELIVERED" कड़क डेटाबेस सबमिशन
   const handleMarkAsDelivered = async (orderId, shopName, amount) => {
     window.Swal.fire({
       title: "Confirm Delivery? 🤔",
@@ -125,16 +116,15 @@ export default function DeliveryDashboard() {
           );
           if (res.data?.success) {
             window.Swal.fire({ title: "Success 🎉", text: "Order shifted to completed grid.", icon: "success" });
-            fetchDashboardData(); // रीयल-टाइम रेंडर सिंक रीलोड
+            fetchDashboardData();
           }
         } catch (err) {
-          window.Swal.fire({ title: "Failed", text: "Database sync synchronization error.", icon: "error" });
+          window.Swal.fire({ title: "Failed", text: "Database synchronization error.", icon: "error" });
         }
       }
     });
   };
 
-  // 🔒 ५. टू-स्टेप पुष्टिकरण सिक्योर लॉगआउट पॉपअप
   const handleLogoutAction = () => {
     window.Swal.fire({
       title: "Confirm Logout? ⚠️",
@@ -152,7 +142,6 @@ export default function DeliveryDashboard() {
     });
   };
 
-  // 📥 ६. वीआईपी नेटिव विंडो एचटीएमएल पीडीएफ रिपोर्टर इंजन
   const handleDownloadPdfReport = () => {
     const printWindow = window.open("", "_blank");
     let reportRowsHtml = "";
@@ -162,11 +151,11 @@ export default function DeliveryDashboard() {
 
     if (activeTab === "pending" || activeTab === "completed") {
       filteredOrders.forEach((o) => {
-        reportRowsHtml += `<tr><td>${o.id || "N/A"}</td><td>${o.shopName}</td><td>${o.mobile}</td><td>${o.items || "Standard Pack"}</td><td>₹${o.totalAmount}</td><td>${o.status}</td></tr>`;
+        reportRowsHtml += `<tr><td>${o.id || o._id || "N/A"}</td><td>${o.shopName}</td><td>${o.mobile}</td><td>${o.items || "Standard Pack"}</td><td>₹${o.totalAmount}</td><td>${o.status}</td></tr>`;
       });
     } else {
       filteredPayments.forEach((p) => {
-        reportRowsHtml += `<tr><td>${p.id || "N/A"}</td><td>${p.shopName}</td><td>₹${p.amount}</td><td>${p.mode || "Cash"}</td><td>${p.time || "N/A"}</td></tr>`;
+        reportRowsHtml += `<tr><td>${p.id || p._id || "N/A"}</td><td>${p.shopName}</td><td>₹${p.amount}</td><td>${p.mode || "Cash"}</td><td>${p.time || "N/A"}</td></tr>`;
       });
     }
 
@@ -205,13 +194,12 @@ export default function DeliveryDashboard() {
     printWindow.document.close();
   };
 
-  // Dynamic Metrics Counters
   const pendingCount = orders.filter((o) => o.status === "Pending").length;
   const completedCount = orders.filter((o) => o.status === "Completed").length;
   const totalRecovery = payments.reduce((acc, curr) => acc + curr.amount, 0);
+
   return (
     <div className="bg-gray-100 min-h-screen font-semibold text-gray-700 flex flex-col antialiased select-none max-w-md mx-auto relative border-x border-gray-200 shadow-xl h-screen overflow-hidden w-full">
-      {/* 🚀 TOP MAIN INDIGO NAVIGATION bar */}
       <div className="bg-indigo-600 text-white p-3 px-4 flex items-center justify-between shadow-md flex-shrink-0">
         <div className="flex items-center gap-3">
           <button onClick={() => setIsDrawerOpen(true)} className="p-1.5 hover:bg-indigo-700 rounded-xl transition active:scale-95">
@@ -227,11 +215,9 @@ export default function DeliveryDashboard() {
         </button>
       </div>
 
-      {/* 📐 SLIDE-OUT PROFILE DRAWER SIDEBAR WITH OUTSIDE CLICK CLOSE FILTER */}
       {isDrawerOpen && (
         <div className="fixed inset-0 bg-black/50 z-50 flex animate-fade-in">
           <div ref={drawerRef} className="bg-white w-72 h-full shadow-2xl flex flex-col border-r border-gray-100 animate-slide-right">
-            {/* Drawer Avatar Core */}
             <div className="bg-gradient-to-br from-indigo-600 to-indigo-700 p-5 pt-8 text-white relative">
               <button onClick={() => setIsDrawerOpen(false)} className="absolute top-4 right-4 p-1.5 bg-indigo-800/40 hover:bg-indigo-900/40 rounded-full transition">
                 <X className="w-4 h-4 text-white" />
@@ -239,7 +225,7 @@ export default function DeliveryDashboard() {
 
               <div className="flex flex-col items-center text-center mt-2">
                 <div className="relative">
-                  <div className="w-16 h-16 rounded-full border-2 border-indigo-200 overflow-hidden bg-white shadow-inner flex items-center justify-center">{agentDetails?.profilePhoto ? <img src={agentDetails.profilePhoto} alt="Profile" className="w-full h-full object-cover" /> : <User className="w-8 h-8 text-indigo-400" />}</div>
+                  <div className="w-16 h-16 rounded-full border-2 border-indigo-200 overflow-hidden bg-white shadow-inner flex items-center justify-center">{photoLoading ? <RefreshCw className="w-5 h-5 text-indigo-500 animate-spin" /> : agentDetails?.profilePhoto ? <img src={agentDetails.profilePhoto} alt="Profile" className="w-full h-full object-cover" /> : <User className="w-8 h-8 text-indigo-400" />}</div>
                   <label className="absolute bottom-0 right-0 p-1.5 bg-white border border-gray-200 text-indigo-600 rounded-full shadow-md cursor-pointer hover:bg-indigo-50 transition active:scale-90">
                     <Camera className="w-3.5 h-3.5" />
                     <input type="file" accept="image/*" onChange={handlePhotoChange} className="hidden" />
@@ -250,7 +236,6 @@ export default function DeliveryDashboard() {
               </div>
             </div>
 
-            {/* Non-Editable Secure Fixed Meta Sheet */}
             <div className="flex-1 p-5 space-y-4 font-medium text-gray-500 overflow-y-auto scrollbar-none">
               <span className="text-[9px] font-black text-gray-400 uppercase block border-b border-gray-100 pb-2 tracking-widest">Verified Coordinate Fields</span>
               <div className="flex items-center gap-3 bg-gray-50 p-2.5 rounded-xl border border-gray-100">
@@ -283,7 +268,6 @@ export default function DeliveryDashboard() {
               </div>
             </div>
 
-            {/* Drawer Logout Action Button */}
             <div className="p-4 border-t border-gray-100 bg-gray-50/50">
               <button onClick={handleLogoutAction} className="w-full flex items-center justify-center gap-2 bg-red-50 text-red-600 border border-red-200 font-black py-2 rounded-xl uppercase tracking-wider text-[10px] shadow-sm">
                 <LogOut className="w-3.5 h-3.5" />
@@ -294,7 +278,6 @@ export default function DeliveryDashboard() {
         </div>
       )}
 
-      {/* 📊 MID STATUS FILTER COUNT METRICS COUNTERS */}
       <div className="p-3 px-4 bg-white border-b border-gray-200 grid grid-cols-3 gap-3 flex-shrink-0 shadow-sm">
         <div onClick={() => setActiveTab("pending")} className={`p-2 px-3 rounded-xl border text-center cursor-pointer transition flex flex-col justify-between ${activeTab === "pending" ? "bg-amber-50 border-amber-300 ring-4 ring-amber-400/10" : "bg-gray-50/50 border-gray-200"}`}>
           <span className="text-[8px] font-black text-amber-600 uppercase block mb-0.5 tracking-wider">PENDING</span>
@@ -319,12 +302,11 @@ export default function DeliveryDashboard() {
         </div>
       </div>
 
-      {/* 🔍 LIVE QUERY FILTERS: SEARCH BAR + CUSTOM TARGET CALENDAR */}
       <div className="p-3 bg-white border-b border-gray-200 flex flex-col gap-2 flex-shrink-0">
         <div className="flex gap-2">
           <div className="relative flex-1">
             <Search className="absolute top-2.5 left-3 w-3.5 h-3.5 text-gray-400" />
-            <input type="text" placeholder="Search shop or client..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full pl-9 pr-3 py-1.5 border border-gray-300 rounded-xl text-xs font-bold bg-gray-50/40 outline-none focus:ring-2 focus:ring-indigo-500" />
+            <input type="text" placeholder="Search shop..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full pl-9 pr-3 py-1.5 border border-gray-300 rounded-xl text-xs font-bold bg-gray-50/40 outline-none focus:ring-2 focus:ring-indigo-500" />
           </div>
           <div className="relative">
             <Calendar className="absolute top-2.5 left-3 w-3.5 h-3.5 text-indigo-500" />
@@ -337,7 +319,6 @@ export default function DeliveryDashboard() {
         </button>
       </div>
 
-      {/* 📦 CORE PRODUCTION CONTENT DATA CONTAINER */}
       <div className="flex-1 overflow-y-auto p-4 space-y-3 pb-12 scrollbar-none">
         {loading ? (
           <div className="text-center py-12 text-gray-400 font-bold flex flex-col items-center justify-center gap-2">
@@ -346,7 +327,6 @@ export default function DeliveryDashboard() {
           </div>
         ) : (
           <>
-            {/* SEGMENT 1: PENDING ORDERS LIST LAYOUT */}
             {activeTab === "pending" &&
               (orders.filter((o) => o.status === "Pending" && o.shopName?.toLowerCase().includes(searchQuery.toLowerCase())).length === 0 ? (
                 <div className="text-center py-16 border-2 border-dashed border-gray-200 rounded-2xl p-5 text-gray-400 font-bold">No allocations found for this date.</div>
@@ -354,7 +334,7 @@ export default function DeliveryDashboard() {
                 orders
                   .filter((o) => o.status === "Pending" && o.shopName?.toLowerCase().includes(searchQuery.toLowerCase()))
                   .map((order) => (
-                    <div key={order.id || order._id} className="bg-white border border-gray-200 p-3 rounded-2xl shadow-sm flex flex-col gap-3 transition duration-200">
+                    <div key={order.id || order._id} className="bg-white border border-gray-200 p-3 rounded-2xl shadow-sm flex flex-col gap-3">
                       <div className="flex justify-between border-b border-gray-100 pb-2">
                         <div>
                           <h4 className="text-xs font-black text-gray-800 max-w-[240px] truncate">{order.shopName}</h4>
@@ -365,7 +345,7 @@ export default function DeliveryDashboard() {
                         <span className="text-xs font-black text-indigo-600 font-mono flex items-center">₹{order.totalAmount}</span>
                       </div>
                       <div className="bg-amber-50/60 border border-amber-100 p-2.5 rounded-xl text-gray-600 font-bold text-[11px] leading-relaxed">{order.items || "Standard Milk Packs Loading..."}</div>
-                      <button onClick={() => handleMarkAsDelivered(order.id, order.shopName, order.totalAmount)} className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-black py-2 rounded-xl text-[10px] uppercase shadow-sm flex items-center justify-center gap-1 transition tracking-wider active:scale-98">
+                      <button onClick={() => handleMarkAsDelivered(order.id, order.shopName, order.totalAmount)} className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-black py-2 rounded-xl text-[10px] uppercase shadow-sm flex items-center justify-center gap-1 transition tracking-wider">
                         <CheckCircle className="w-3.5 h-3.5" />
                         <span>Mark As Delivered</span>
                       </button>
@@ -373,7 +353,6 @@ export default function DeliveryDashboard() {
                   ))
               ))}
 
-            {/* SEGMENT 2: DELIVERED HISTORICAL SUCCESS TAGS */}
             {activeTab === "completed" &&
               (orders.filter((o) => o.status === "Completed" && o.shopName?.toLowerCase().includes(searchQuery.toLowerCase())).length === 0 ? (
                 <div className="text-center py-16 border-2 border-dashed border-gray-200 rounded-2xl p-5 text-gray-400 font-bold">No historical data matches.</div>
@@ -396,7 +375,6 @@ export default function DeliveryDashboard() {
                   ))
               ))}
 
-            {/* SEGMENT 3: CASH RECOVERY COLLECTION MATRICES */}
             {activeTab === "collected" &&
               (payments.filter((p) => p.shopName?.toLowerCase().includes(searchQuery.toLowerCase())).length === 0 ? (
                 <div className="text-center py-16 border-2 border-dashed border-gray-200 rounded-2xl p-5 text-gray-400 font-bold">Zero collection matrix logs available.</div>
@@ -404,7 +382,7 @@ export default function DeliveryDashboard() {
                 payments
                   .filter((p) => p.shopName?.toLowerCase().includes(searchQuery.toLowerCase()))
                   .map((pay) => (
-                    <div key={pay.id || pay._id} className="bg-white border border-gray-200 p-3 rounded-2xl shadow-sm flex justify-between items-center transition duration-150">
+                    <div key={pay.id || pay._id} className="bg-white border border-gray-200 p-3 rounded-2xl shadow-sm flex justify-between items-center">
                       <div>
                         <h4 className="text-xs font-black text-gray-800">{pay.shopName}</h4>
                         <p className="text-[10px] text-gray-400 font-mono mt-0.5">
