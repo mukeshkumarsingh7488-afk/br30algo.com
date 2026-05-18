@@ -13,12 +13,17 @@ export default function RegisterDeliveryBoy() {
     mobile: "",
     email: "",
     password: "",
-    route: "Parihar Route",
-    otp: "", // बैकएंड कैशे वेरिफिकेशन के लिए ओटीपी इनपुट बॉक्स
+    route: "All Routes",
+    otp: "",
   });
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleMobileChange = (e) => {
+    const value = e.target.value.replace(/\D/g, "");
+    setFormData({ ...formData, mobile: value });
   };
 
   const validatePassword = (pass) => {
@@ -32,11 +37,17 @@ export default function RegisterDeliveryBoy() {
     }
     try {
       setOtpLoading(true);
+      const token = localStorage.getItem("sudha_token");
 
-      // ⚡ आपके असली बैकएंड sendRegistrationOtp के अनुसार सीधा और साफ़ राउट हिट होगा
-      const res = await axios.post(`${API_URL}/users/send-otp`, {
-        email: formData.email,
-      });
+      const res = await axios.post(
+        `${API_URL}/users/send-otp`,
+        {
+          email: formData.email,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
 
       if (res.data && res.data.success) {
         setIsOtpSent(true);
@@ -62,8 +73,8 @@ export default function RegisterDeliveryBoy() {
 
     if (!validatePassword(formData.password)) {
       return window.Swal.fire({
-        title: "Weak Password",
-        text: "Password must be at least 6 characters long and include 1 Uppercase, 1 Lowercase, 1 Number, and 1 Special Character (@$!%*?&).",
+        title: "Weak Password Layout",
+        text: "Password requirements failed! Use at least 6 characters containing 1 Uppercase, 1 Lowercase, 1 Number, and 1 Special Token (@$!%*?&).",
         icon: "error",
       });
     }
@@ -85,7 +96,7 @@ export default function RegisterDeliveryBoy() {
         password: formData.password,
         route: formData.route,
         role: "delivery_boy",
-        otp: formData.otp, // यह ओटीपी आपके registerDeliveryBoyNode कंट्रोलर के पास जाएगा मैच होने
+        otp: formData.otp,
       };
 
       const res = await axios.post(`${API_URL}/users/register-agent`, payload, {
@@ -94,7 +105,7 @@ export default function RegisterDeliveryBoy() {
 
       if (res.data && res.data.success) {
         window.Swal.fire({ title: "Agent Authorized! ✓", text: "Delivery Boy successfully added to MongoDB cluster.", icon: "success" });
-        setFormData({ proprietor: "", mobile: "", email: "", password: "", route: "Parihar Route", otp: "" });
+        setFormData({ proprietor: "", mobile: "", email: "", password: "", route: "All Routes", otp: "" });
         setIsOtpSent(false);
       }
     } catch (err) {
@@ -126,7 +137,7 @@ export default function RegisterDeliveryBoy() {
             <Phone className="w-3.5 h-3.5 text-gray-400" />
             <span>Mobile Number</span>
           </label>
-          <input type="tel" name="mobile" required value={formData.mobile} onChange={handleChange} className="w-full px-3 py-2 border border-gray-300 rounded-xl outline-none font-bold text-gray-700 text-xs focus:ring-2 focus:ring-indigo-500 shadow-sm bg-gray-50/30" placeholder="10 Digit Contact Number" />
+          <input type="text" maxLength="10" name="mobile" required value={formData.mobile} onChange={handleMobileChange} className="w-full px-3 py-2 border border-gray-300 rounded-xl outline-none font-bold text-gray-700 text-xs focus:ring-2 focus:ring-indigo-500 shadow-sm bg-gray-50/30 font-mono" placeholder="10 Digit Contact Number" />
         </div>
 
         <div>
@@ -171,9 +182,9 @@ export default function RegisterDeliveryBoy() {
             <span>Assigned Distribution Route</span>
           </label>
           <select name="route" value={formData.route} onChange={handleChange} className="w-full px-3 py-2 border border-gray-300 rounded-xl outline-none font-bold text-gray-700 text-xs focus:ring-2 focus:ring-indigo-500 bg-white shadow-sm">
+            <option value="All Routes">All Routes</option>
             <option value="Parihar Route">Parihar Route</option>
             <option value="Sonbarsa Route">Sonbarsa Route</option>
-            <option value="All Routes">All Routes</option>
           </select>
         </div>
 
