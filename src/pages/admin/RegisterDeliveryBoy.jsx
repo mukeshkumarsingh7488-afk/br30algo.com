@@ -33,24 +33,17 @@ export default function RegisterDeliveryBoy() {
     if (!formData.email.trim()) {
       return window.Swal.fire({ title: "Warning", text: "Please enter a valid email address first.", icon: "warning" });
     }
-    if (!formData.proprietor.trim()) {
-      return window.Swal.fire({ title: "Warning", text: "Please enter the Agent Full Name first.", icon: "warning" });
-    }
     try {
       setOtpLoading(true);
-      const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
+      const token = localStorage.getItem("sudha_token");
 
       const res = await axios.post(`${API_URL}/users/send-otp`, {
         email: formData.email,
-        otp: generatedOtp,
-        proprietor: formData.proprietor,
-        role: "delivery_boy",
       });
 
       if (res.data && res.data.success) {
-        setServerOtp(generatedOtp);
         setIsOtpSent(true);
-        window.Swal.fire({ title: "OTP Sent! 📩", text: "Verification code successfully dispatched to agent email.", icon: "success" });
+        window.Swal.fire({ title: "OTP Sent! 📩", text: "6-Digit registration code successfully sent to email!", icon: "success" });
       }
     } catch (err) {
       window.Swal.fire({ title: "Gateway Error", text: err.response?.data?.message || "Failed to send registration verification code.", icon: "error" });
