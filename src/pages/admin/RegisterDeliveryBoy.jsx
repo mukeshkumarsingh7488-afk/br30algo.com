@@ -1,23 +1,20 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { User, Phone, Mail, Key, ShieldCheck, MapPin, Eye, EyeOff, Lock } from "lucide-react";
+import { User, Phone, Mail, Key, ShieldCheck, MapPin, Eye, EyeOff, Lock, MessageSquare } from "lucide-react";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+const API_URL = import.meta.env.VITE_API_URL || "https://onrender.com";
 
 export default function RegisterDeliveryBoy() {
   const [showPassword, setShowPassword] = useState(false);
   const [isOtpSent, setIsOtpSent] = useState(false);
   const [otpLoading, setOtpLoading] = useState(false);
-  const [serverOtp, setServerOtp] = useState("");
-  const [userOtp, setUserOtp] = useState("");
-  const [isEmailVerified, setIsEmailVerified] = useState(false);
-
   const [formData, setFormData] = useState({
     proprietor: "",
     mobile: "",
     email: "",
     password: "",
     route: "Parihar Route",
+    otp: "", // बैकएंड कैशे वेरिफिकेशन के लिए ओटीपी इनपुट बॉक्स
   });
 
   const handleChange = (e) => {
@@ -35,8 +32,8 @@ export default function RegisterDeliveryBoy() {
     }
     try {
       setOtpLoading(true);
-      const token = localStorage.getItem("sudha_token");
 
+      // ⚡ आपके असली बैकएंड sendRegistrationOtp के अनुसार सीधा और साफ़ राउट हिट होगा
       const res = await axios.post(`${API_URL}/users/send-otp`, {
         email: formData.email,
       });
@@ -52,20 +49,15 @@ export default function RegisterDeliveryBoy() {
     }
   };
 
-  const handleVerifyOtp = () => {
-    if (userOtp === serverOtp && serverOtp !== "") {
-      setIsEmailVerified(true);
-      window.Swal.fire({ title: "Verified! ✓", text: "Email node security check cleared successfully.", icon: "success" });
-    } else {
-      window.Swal.fire({ title: "Invalid OTP", text: "The verification parameters do not match.", icon: "error" });
-    }
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!isEmailVerified) {
-      return window.Swal.fire({ title: "Security Block", text: "Please verify the agent email via OTP first.", icon: "warning" });
+    if (!isOtpSent) {
+      return window.Swal.fire({ title: "Security Block", text: "Please trigger and send the email OTP code first.", icon: "warning" });
+    }
+
+    if (!formData.otp.trim()) {
+      return window.Swal.fire({ title: "Input Required", text: "Please enter the 6-digit code received on email.", icon: "warning" });
     }
 
     if (!validatePassword(formData.password)) {
@@ -77,7 +69,7 @@ export default function RegisterDeliveryBoy() {
     }
 
     window.Swal.fire({
-      title: "Registering Agent...",
+      title: "Verifying OTP & Registering...",
       allowOutsideClick: false,
       didOpen: () => {
         window.Swal.showLoading();
@@ -93,6 +85,7 @@ export default function RegisterDeliveryBoy() {
         password: formData.password,
         route: formData.route,
         role: "delivery_boy",
+        otp: formData.otp, // यह ओटीपी आपके registerDeliveryBoyNode कंट्रोलर के पास जाएगा मैच होने
       };
 
       const res = await axios.post(`${API_URL}/users/register-agent`, payload, {
@@ -101,14 +94,11 @@ export default function RegisterDeliveryBoy() {
 
       if (res.data && res.data.success) {
         window.Swal.fire({ title: "Agent Authorized! ✓", text: "Delivery Boy successfully added to MongoDB cluster.", icon: "success" });
-        setFormData({ proprietor: "", mobile: "", email: "", password: "", route: "Parihar Route" });
+        setFormData({ proprietor: "", mobile: "", email: "", password: "", route: "Parihar Route", otp: "" });
         setIsOtpSent(false);
-        setIsEmailVerified(false);
-        setUserOtp("");
-        setServerOtp("");
       }
     } catch (err) {
-      window.Swal.fire({ title: "Registration Failed", text: err.response?.data?.message || "Network node authentication timeout.", icon: "error" });
+      window.Swal.fire({ title: "Registration Failed", text: err.response?.data?.message || "Invalid verification OTP code or server timeout.", icon: "error" });
     }
   };
 
@@ -128,7 +118,7 @@ export default function RegisterDeliveryBoy() {
             <User className="w-3.5 h-3.5 text-gray-400" />
             <span>Agent Full Name</span>
           </label>
-          <input type="text" name="proprietor" required disabled={isEmailVerified} value={formData.proprietor} onChange={handleChange} className="w-full px-3 py-2 border border-gray-300 rounded-xl outline-none font-bold text-gray-700 text-xs focus:ring-2 focus:ring-indigo-500 shadow-sm bg-gray-50/30" placeholder="e.g. Ramesh Kumar" />
+          <input type="text" name="proprietor" required value={formData.proprietor} onChange={handleChange} className="w-full px-3 py-2 border border-gray-300 rounded-xl outline-none font-bold text-gray-700 text-xs focus:ring-2 focus:ring-indigo-500 shadow-sm bg-gray-50/30" placeholder="e.g. Ramesh Kumar" />
         </div>
 
         <div>
@@ -136,7 +126,7 @@ export default function RegisterDeliveryBoy() {
             <Phone className="w-3.5 h-3.5 text-gray-400" />
             <span>Mobile Number</span>
           </label>
-          <input type="tel" name="mobile" required disabled={isEmailVerified} value={formData.mobile} onChange={handleChange} className="w-full px-3 py-2 border border-gray-300 rounded-xl outline-none font-bold text-gray-700 text-xs focus:ring-2 focus:ring-indigo-500 shadow-sm bg-gray-50/30" placeholder="10 Digit Contact Number" />
+          <input type="tel" name="mobile" required value={formData.mobile} onChange={handleChange} className="w-full px-3 py-2 border border-gray-300 rounded-xl outline-none font-bold text-gray-700 text-xs focus:ring-2 focus:ring-indigo-500 shadow-sm bg-gray-50/30" placeholder="10 Digit Contact Number" />
         </div>
 
         <div>
@@ -145,24 +135,20 @@ export default function RegisterDeliveryBoy() {
             <span>Email Address</span>
           </label>
           <div className="flex gap-2">
-            <input type="email" name="email" required disabled={isEmailVerified} value={formData.email} onChange={handleChange} className="flex-1 px-3 py-2 border border-gray-300 rounded-xl outline-none font-bold text-gray-700 text-xs focus:ring-2 focus:ring-indigo-500 shadow-sm bg-gray-50/30" placeholder="agentname@sudha.com" />
-            {!isEmailVerified && (
-              <button type="button" onClick={handleSendOtp} disabled={otpLoading} className="px-3 bg-indigo-50 text-indigo-600 border border-indigo-200 font-black text-[10px] rounded-xl hover:bg-indigo-100 transition uppercase shadow-sm">
-                {otpLoading ? "Sending..." : isOtpSent ? "Resend" : "Send OTP"}
-              </button>
-            )}
+            <input type="email" name="email" required value={formData.email} onChange={handleChange} className="flex-1 px-3 py-2 border border-gray-300 rounded-xl outline-none font-bold text-gray-700 text-xs focus:ring-2 focus:ring-indigo-500 shadow-sm bg-gray-50/30" placeholder="agentname@sudha.com" />
+            <button type="button" onClick={handleSendOtp} disabled={otpLoading} className="px-3 bg-indigo-50 text-indigo-600 border border-indigo-200 font-black text-[10px] rounded-xl hover:bg-indigo-100 transition uppercase shadow-sm">
+              {otpLoading ? "Sending..." : isOtpSent ? "Resend" : "Send OTP"}
+            </button>
           </div>
         </div>
 
-        {isOtpSent && !isEmailVerified && (
-          <div className="bg-indigo-50/50 p-3 rounded-2xl border border-indigo-100 flex flex-col gap-2 animate-fade-in">
-            <label className="block text-[9px] font-black text-indigo-600 uppercase tracking-wider">Enter 6-Digit Email Verification Code</label>
-            <div className="flex gap-2">
-              <input type="text" maxLength="6" value={userOtp} onChange={(e) => setUserOtp(e.target.value)} className="flex-1 px-3 py-1.5 border border-indigo-200 rounded-xl outline-none font-black text-center text-sm font-mono focus:ring-2 focus:ring-indigo-500 bg-white" placeholder="000000" />
-              <button type="button" onClick={handleVerifyOtp} className="px-4 bg-indigo-600 text-white font-black text-[10px] rounded-xl hover:bg-indigo-700 transition uppercase shadow-md">
-                Verify
-              </button>
-            </div>
+        {isOtpSent && (
+          <div className="bg-indigo-50/50 p-3 rounded-2xl border border-indigo-100 flex flex-col gap-1.5 animate-fade-in">
+            <label className="block text-[9px] font-black text-indigo-600 uppercase tracking-wider flex items-center gap-1">
+              <MessageSquare className="w-3.5 h-3.5 text-indigo-500" />
+              <span>Enter 6-Digit Email Registration Code</span>
+            </label>
+            <input type="text" name="otp" maxLength="6" required value={formData.otp} onChange={handleChange} className="w-full px-3 py-2 border border-indigo-200 rounded-xl outline-none font-black text-center text-sm font-mono focus:ring-2 focus:ring-indigo-500 bg-white shadow-inner" placeholder="000000" />
           </div>
         )}
 
@@ -191,7 +177,7 @@ export default function RegisterDeliveryBoy() {
           </select>
         </div>
 
-        <button type="submit" disabled={!isEmailVerified} className={`w-full font-black py-2.5 rounded-xl transition text-[11px] uppercase tracking-wider shadow-md mt-6 ${isEmailVerified ? "bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-100" : "bg-gray-200 text-gray-400 cursor-not-allowed border"}`}>
+        <button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-black py-2.5 rounded-xl transition text-[11px] uppercase tracking-wider shadow-md mt-6 shadow-indigo-100">
           Authorize & Boot Agent Account
         </button>
       </form>
