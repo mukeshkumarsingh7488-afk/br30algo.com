@@ -311,7 +311,7 @@ export default function DeliveryDashboard() {
         </div>
       </div>
 
-      <div className="p-3 bg-white border-b border-gray-200 flex flex-col gap-2 flex-shrink-0">
+      <div className="p-3 bg-white border-b border-gray-100 flex flex-col gap-2 flex-shrink-0">
         <div className="flex gap-2">
           <div className="relative flex-1">
             <Search className="absolute top-2.5 left-3 w-3.5 h-3.5 text-gray-400" />
