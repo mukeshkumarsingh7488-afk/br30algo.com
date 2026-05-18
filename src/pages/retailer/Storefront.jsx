@@ -16,12 +16,12 @@ export default function Storefront() {
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
-  // 📸 मोंगोडीबी डेटाबेस स्ट्रक्चर के अनुसार प्रोफाइल पिक्चर का अलगाव फिक्स
-  const [profilePic, setProfilePic] = useState(user?.photo || user?.userProfilePic || null);
+  const [profilePic, setProfilePic] = useState(user?.userProfilePic || null);
   const [proprietorName, setProprietorName] = useState(user?.proprietor || "");
-  const [isEditingName, setIsEditingName] = useState(false); // नाम एडिट करने की पेंसिल स्टेट
-
+  const [isEditingName, setIsEditingName] = useState(false);
   const [walletBalance, setWalletBalance] = useState(user?.walletBalance || 0);
+  const [photoLoading, setPhotoLoading] = useState(false);
+
   const [cart, setCart] = useState(() => {
     const savedCart = localStorage.getItem(`sudha_cart_${user?.id || user?._id}`);
     return savedCart ? JSON.parse(savedCart) : {};
@@ -33,6 +33,55 @@ export default function Storefront() {
     }
   }, [cart, user]);
 
+  const handlePhotoChange = async (e) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    try {
+      setPhotoLoading(true);
+      window.Swal.fire({
+        title: "Uploading Photo...",
+        allowOutsideClick: false,
+        didOpen: () => {
+          window.Swal.showLoading();
+        },
+      });
+
+      const convertToBase64 = (targetFile) => {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.readAsDataURL(targetFile);
+          reader.onload = () => resolve(reader.result);
+          reader.onerror = (error) => reject(error);
+        });
+      };
+
+      const base64PayloadString = await convertToBase64(files);
+      const token = localStorage.getItem("sudha_token");
+
+      const res = await axios.post(
+        `${API_URL}/users/update-profile`,
+        { profilePhoto: base64PayloadString },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      if (res.data?.success) {
+        const updatedUrl = res.data.url || res.data.user?.userProfilePic;
+        setProfilePic(updatedUrl);
+        window.Swal.fire({ title: "Success ✓", text: "Profile picture securely locked inside database.", icon: "success" });
+      }
+    } catch (err) {
+      window.Swal.fire({ title: "Upload Failed", text: err.response?.data?.message || "Cloud storage connection error.", icon: "error" });
+    } finally {
+      setPhotoLoading(false);
+    }
+  };
+
   useEffect(() => {
     const fetchLiveUserWallet = async () => {
       try {
@@ -41,8 +90,9 @@ export default function Storefront() {
         const res = await axios.get(`${API_URL}/users/profile/${uId}`);
         if (res.data && res.data.success) {
           setWalletBalance(res.data.data.walletBalance || 0);
-          // अगर डेटाबेस में प्रोफाइल पिक बदली है तो स्टेट सिंक करना
-          if (res.data.data.userProfilePic) setProfilePic(res.data.data.userProfilePic);
+          if (res.data.data.userProfilePic) {
+            setProfilePic(res.data.data.userProfilePic);
+          }
         }
       } catch (err) {
         console.log("Wallet Sync Network Warning");
