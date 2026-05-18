@@ -142,7 +142,7 @@ export default function ManageDeliveryBoy() {
                   <tr key={u._id || u.id} className="hover:bg-gray-50/80 transition">
                     <td className="p-3 font-bold text-gray-800 truncate">
                       <div className="flex items-center space-x-3 truncate">
-                        <div className="w-9 h-9 bg-indigo-50 text-indigo-600 border rounded-xl flex items-center justify-center font-bold text-sm shadow-inner flex-shrink-0">{u.proprietor ? u.proprietor.charAt(0).toUpperCase() : "🚚"}</div>
+                        <div className="w-10 h-10 rounded-full border border-gray-200 bg-gray-50 overflow-hidden flex items-center justify-center flex-shrink-0 shadow-inner">{u.userProfilePic ? <img src={u.userProfilePic} alt="Agent Profile" className="w-full h-full object-cover" /> : <span className="text-xs font-black text-indigo-600 uppercase">{u.proprietor ? u.proprietor.charAt(0).toUpperCase() : "🚚"}</span>}</div>
                         <div className="truncate flex flex-col">
                           <span className="text-gray-800 text-xs font-black truncate">🚚 Official Agent</span>
                           <span className="text-[10px] text-gray-400 font-bold mt-0.5 truncate flex items-center gap-0.5">
