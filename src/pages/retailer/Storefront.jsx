@@ -90,7 +90,7 @@ export default function Storefront() {
           },
         },
       );
-
+      console.log(res.data);
       if (res.data?.success) {
         const updatedUrl = res.data.url || res.data.user?.userProfilePic;
 
