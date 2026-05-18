@@ -35,19 +35,12 @@ export default function RegisterDeliveryBoy() {
     }
     try {
       setOtpLoading(true);
-      const token = localStorage.getItem("sudha_token");
       const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
 
-      const res = await axios.post(
-        `${API_URL}/users/send-otp`,
-        {
-          email: formData.email,
-          otp: generatedOtp,
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        },
-      );
+      const res = await axios.post(`${API_URL}/users/send-otp`, {
+        email: formData.email,
+        otp: generatedOtp,
+      });
 
       if (res.data && res.data.success) {
         setServerOtp(generatedOtp);
