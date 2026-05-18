@@ -43,8 +43,7 @@ export function AuthProvider({ children }) {
       };
     }
   };
-
-  // 📸 🆕 जादुई स्टेट लॉक इंजन: प्रोफाइल फोटो बदलते ही पूरे ऐप की मेमोरी को रीयल-टाइम अपडेट करना
+  
   const updateUserProfileState = (updatedUserData) => {
     localStorage.setItem("sudha_user", JSON.stringify(updatedUserData));
     setUser(updatedUserData);

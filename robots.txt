@@ -1,4 +1,11 @@
 User-agent: *
 Allow: /
+Allow: /login
+Allow: /register
+Allow: /forgot-password
+Disallow: /admin/
+Disallow: /delivery/
+Disallow: /retailer/
+Disallow: /store/
 
-Sitemap: https://yourproject.vercel.app/sitemap.xml
+Sitemap: https://sudha-dairy-frontend.vercel.app/sitemap.xml
