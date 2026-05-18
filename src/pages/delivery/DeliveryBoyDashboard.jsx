@@ -60,41 +60,44 @@ export default function DeliveryDashboard() {
   }, [selectedDate]);
 
   const handlePhotoChange = async (e) => {
-    const files = e.target.files;
-    if (!files || files.length === 0) return;
+    const file = e.target.files?.[0];
+    if (!file) return;
 
-    const targetFile = files[0];
-    const fileReader = new FileReader();
+    try {
+      setPhotoLoading(true);
 
-    setPhotoLoading(true);
-    fileReader.readAsDataURL(targetFile);
+      const convertToBase64 = (targetFile) => {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.readAsDataURL(targetFile);
+          reader.onload = () => resolve(reader.result);
+          reader.onerror = (error) => reject(error);
+        });
+      };
 
-    fileReader.onload = async () => {
-      try {
-        const base64PayloadString = fileReader.result;
-        const token = localStorage.getItem("sudha_token");
+      const base64PayloadString = await convertToBase64(file);
+      const token = localStorage.getItem("sudha_token");
 
-        const res = await axios.post(
-          `${API_URL}/users/update-profile`,
-          { profilePhoto: base64PayloadString },
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
+      const res = await axios.post(
+        `${API_URL}/users/update-profile`,
+        { profilePhoto: base64PayloadString },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
-        );
+        },
+      );
 
-        if (res.data?.success) {
-          window.Swal.fire({ title: "Success ✓", text: "Profile picture securely locked inside database.", icon: "success" });
-          fetchDashboardData();
-        }
-      } catch (err) {
-        window.Swal.fire({ title: "Upload Failed", text: err.response?.data?.message || "Cloud storage network error.", icon: "error" });
-      } finally {
-        setPhotoLoading(false);
+      if (res.data?.success) {
+        window.Swal.fire({ title: "Success ✓", text: "Profile picture securely locked inside database.", icon: "success" });
+        fetchDashboardData();
       }
-    };
+    } catch (err) {
+      window.Swal.fire({ title: "Upload Failed", text: err.response?.data?.message || "Cloud storage network error.", icon: "error" });
+    } finally {
+      setPhotoLoading(false);
+    }
   };
 
   const handleMarkAsDelivered = async (orderId, shopName, amount) => {
@@ -311,7 +314,7 @@ export default function DeliveryDashboard() {
         </div>
       </div>
 
-      <div className="p-3 bg-white border-b border-gray-100 flex flex-col gap-2 flex-shrink-0">
+      <div className="p-3 bg-white border-b border-gray-200 flex flex-col gap-2 flex-shrink-0">
         <div className="flex gap-2">
           <div className="relative flex-1">
             <Search className="absolute top-2.5 left-3 w-3.5 h-3.5 text-gray-400" />
