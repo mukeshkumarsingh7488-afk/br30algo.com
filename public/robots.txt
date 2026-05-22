@@ -1,10 +1,31 @@
+# robots.txt
+
 User-agent: *
 
-Disallow: /admin/
-Disallow: /delivery/
-Disallow: /retailer/
-Disallow: /store/
-
+# ✅ Public Page
 Allow: /
 
-Sitemap: https://sudha-dairy-frontend.vercel.app/sitemap.xml
+# ❌ Private/Admin Pages
+Disallow: /admin
+Disallow: /overview
+Disallow: /list-product
+Disallow: /manage-product
+Disallow: /stock-panel
+Disallow: /register-user
+Disallow: /register-delivery-boy
+Disallow: /manage-user
+Disallow: /manage-delivery-boy
+Disallow: /invoice-entry
+Disallow: /order-history
+Disallow: /sales-history
+Disallow: /storefront
+Disallow: /delivery-dashboard
+
+# ❌ React Internal/Protected Routes
+Disallow: /dashboard
+Disallow: /protected
+Disallow: /private
+Disallow: /api
+
+# ✅ Sitemap
+Sitemap: https://br30algo.com.com/sitemap.xml
