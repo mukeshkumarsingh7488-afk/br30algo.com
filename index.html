@@ -55,15 +55,22 @@
         "@type": "Organization",
         "@id": "https://br30algo.com/#organization",
         "name": "BR30 Algo",
-        "alternateName": "Mr BR30 Trader Official Algo",
+        "alternateName": ["Mr BR30 Trader Official Algo", "BR30 Algo Trading System"],
         "url": "https://br30algo.com/",
-        "logo": "https://i.ibb.co/KxnQc4gx/BR30-LOGO1.png",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://i.ibb.co/KxnQc4gx/BR30-LOGO1.png",
+          "width": 1200,
+          "height": 1200
+        },
         "description": "BR30 Algo is a private automated trading system by Mr BR30 Trader Official designed for market analysis, buy/sell opportunity detection, automated trade execution, and disciplined trading support.",
         "founder": {
           "@type": "Person",
+          "@id": "https://br30algo.com/#person",
           "name": "Mukesh Raj",
-          "jobTitle": "Founder, Professional Trader, Trading Mentor, Web Developer",
-          "url": "https://br30group.com/"
+          "jobTitle": ["Founder", "Professional Trader", "Trading Mentor", "Web Developer", "Algorithmic Trading System Developer"],
+          "url": "https://br30group.com/",
+          "image": "https://i.ibb.co/gMMyPjDM/profile-jpg.jpg"
         },
         "parentOrganization": {
           "@type": "Organization",
@@ -78,6 +85,13 @@
           { "@type": "Brand", "name": "BR30 Web Services" },
           { "@type": "Brand", "name": "BR30 Custom Logo Design" }
         ],
+        "contactPoint": {
+          "@type": "ContactPoint",
+          "contactType": "customer support",
+          "email": "support.br30trader@gmail.com",
+          "telephone": "+91-6200986380",
+          "availableLanguage": ["English", "Hindi"]
+        },
         "sameAs": ["https://www.facebook.com/share/1DDJYGYYDf/", "https://www.instagram.com/br30Traderofficial", "https://www.youtube.com/@br30traderofficial", "https://t.me/+hBAT4kWo63A4ZWY1", "https://chat.whatsapp.com/B4t82SWBcgOIZTeQXp1wDI", "https://www.threads.com/@br30traderofficial", "https://x.com/MukeshKuma48159", "https://www.linkedin.com/in/mukesh-raj-b75a65253?utm_source=share_via&utm_content=profile&utm_medium=member_android"]
       }
     </script>
@@ -417,8 +431,8 @@
         ]
       }
     </script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.tailwindcss.com" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
   </head>
   <body class="bg-gray-100 text-gray-900">
     <!-- 🔥 Google Tag Manager (noscript) -->
