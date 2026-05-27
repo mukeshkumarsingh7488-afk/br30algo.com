@@ -129,7 +129,7 @@ export default function LoginPage() {
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4 select-none font-sans text-xs">
       <div className="bg-white p-6 rounded-3xl border border-gray-200 shadow-xl max-w-sm w-full space-y-5">
         <div className="text-center">
-          <h1 className="text-2xl font-black text-blue-600 tracking-wide">BR30 TRADER ALGO</h1>
+          <h1 className="text-2xl font-black text-blue-600 tracking-wide">BR30 ALGO</h1>
           <p className="text-gray-400 mt-1 font-semibold text-[11px] tracking-wide uppercase">Exclusive Access for BR30 Founder</p>
         </div>
 
