@@ -2,30 +2,31 @@
 
 User-agent: *
 
-# ✅ Public Page
+# ✅ Allow Everything
 Allow: /
 
-# ❌ Private/Admin Pages
-Disallow: /admin
-Disallow: /overview
-Disallow: /list-product
-Disallow: /manage-product
-Disallow: /stock-panel
-Disallow: /register-user
-Disallow: /register-delivery-boy
-Disallow: /manage-user
-Disallow: /manage-delivery-boy
-Disallow: /invoice-entry
-Disallow: /order-history
-Disallow: /sales-history
-Disallow: /storefront
-Disallow: /delivery-dashboard
+Allow: /admin
+Allow: /overview
+Allow: /list-product
+Allow: /manage-product
+Allow: /stock-panel
+Allow: /register-user
+Allow: /register-delivery-boy
+Allow: /manage-user
+Allow: /manage-delivery-boy
+Allow: /invoice-entry
+Allow: /order-history
+Allow: /sales-history
+Allow: /storefront
+Allow: /delivery-dashboard
+Allow: /dashboard
+Allow: /protected
+Allow: /private
+Allow: /api
 
-# ❌ React Internal/Protected Routes
-Disallow: /dashboard
-Disallow: /protected
-Disallow: /private
-Disallow: /api
+# ✅ Public Files
+Allow: /robots.txt
+Allow: /sitemap.xml
 
 # ✅ Sitemap
-Sitemap: https://br30algo.com.com/sitemap.xml
+Sitemap: https://br30algo-com.vercel.app/sitemap.xml
